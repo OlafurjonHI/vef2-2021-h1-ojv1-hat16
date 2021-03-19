@@ -39,16 +39,20 @@ export async function createEpisodes(episode) {
   const {
     serieId, name, airDate, season, overview, serie, number,
   } = episode;
-  const d = Date.parse(airDate);
+  let parsedDate = null;
+  if (airDate.length > 0) {
+    const d = Date.parse(airDate);
+    parsedDate = new Date(d);
+  }
   const q = `
     INSERT INTO
-      episode (serie_id,name,overview,air_date, season_id,number, serie)
+      episode (serie_id,name,overview,air_date, season,number, serie)
     VALUES ($1, $2, $3, $4, $5, $6,$7)
     RETURNING *
   `;
   try {
     const result = await query(
-      q, [serieId, name, overview, new Date(d), season, number, serie],
+      q, [serieId, name, overview, parsedDate, season, number, serie],
     );
     return result.rows[0];
   } catch (e) {
@@ -62,7 +66,7 @@ export async function createSeasons(series) {
   const {
     serieId, name, airDate, poster, overview, serie, number,
   } = series;
-  let parsedDate = '';
+  let parsedDate = null;
   if (airDate.length > 0) {
     const d = Date.parse(airDate);
     parsedDate = new Date(d);
@@ -143,7 +147,7 @@ export async function createSeries(series) {
   const {
     id, name, tagline, description, airDate, inProduction, image, language, network, homepage,
   } = series;
-  let parsedDate = '';
+  let parsedDate = null;
   if (airDate.length > 0) {
     const d = Date.parse(airDate);
     parsedDate = new Date(d);

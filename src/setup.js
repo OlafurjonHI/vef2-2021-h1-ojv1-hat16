@@ -19,6 +19,7 @@ const insertSeasons = async () => {
   seasons.forEach(async (s) => {
     await (createSeasons(s));
   });
+
 };
 
 const insertSeries = async () => {
@@ -33,11 +34,12 @@ const insertSeries = async () => {
   } catch (e) {
     console.error(e.message);
   }
+
 };
 
 const setup = async () => {
-  //insertSeries();
-  //insertSeasons();
+insertSeries();
+insertSeasons();
   insertEpisodes();
 };
 
