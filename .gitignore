@@ -21,8 +21,4 @@ yarn-debug.log*
 yarn-error.log*
 
 .env
-/src/login.js
 /src/helpers.js
-/src/registration.js
-/src/app.js
-/src/admin.js

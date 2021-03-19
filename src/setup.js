@@ -36,8 +36,8 @@ const insertSeries = async () => {
 };
 
 const setup = async () => {
-  insertSeries();
-  insertSeasons();
+  //insertSeries();
+  //insertSeasons();
   insertEpisodes();
 };
 

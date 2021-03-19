@@ -20,10 +20,11 @@ cloudinary.v2.config({
  *
  * @param image path to image to be uploaded
  */
-export function uploadImg(image) {
-  cloudinary.v2.uploader.upload(image, (error, result) => {
-    // eslint-disable-next-line no-console
-    console.log(result.url);
-    return result.url;
+export async function uploadImg(image) {
+  return new Promise((resolve, reject) => {
+    cloudinary.v2.uploader.upload(image, (error, result) => {
+      if (error) return reject(error);
+      return resolve(result.url);
+    });
   });
 }

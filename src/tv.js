@@ -1,5 +1,6 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
+import { uploadImg } from './cloudinary.js';
 
 dotenv.config();
 
@@ -41,7 +42,7 @@ export async function createEpisodes(episode) {
   const d = Date.parse(airDate);
   const q = `
     INSERT INTO
-      series (serie_id,name,overview,air_date, season_id,number, serie)
+      episode (serie_id,name,overview,air_date, season_id,number, serie)
     VALUES ($1, $2, $3, $4, $5, $6,$7)
     RETURNING *
   `;
@@ -61,16 +62,21 @@ export async function createSeasons(series) {
   const {
     serieId, name, airDate, poster, overview, serie, number,
   } = series;
-  const d = Date.parse(airDate);
+  let parsedDate = '';
+  if (airDate.length > 0) {
+    const d = Date.parse(airDate);
+    parsedDate = new Date(d);
+  }
   const q = `
     INSERT INTO
-      series (serie_id,name,overview,air_date, poster,number, serie)
+      seasons (serie_id,name,overview,air_date, poster,number, serie)
     VALUES ($1, $2, $3, $4, $5, $6,$7)
     RETURNING *
   `;
   try {
+    const imgUrl = await uploadImg(`./data/img/${poster}`);
     const result = await query(
-      q, [serieId, name, overview, new Date(d), poster, number, serie],
+      q, [serieId, name, overview, parsedDate, imgUrl, number, serie],
     );
     return result.rows[0];
   } catch (e) {
@@ -137,7 +143,12 @@ export async function createSeries(series) {
   const {
     id, name, tagline, description, airDate, inProduction, image, language, network, homepage,
   } = series;
-  const d = Date.parse(airDate);
+  let parsedDate = '';
+  if (airDate.length > 0) {
+    const d = Date.parse(airDate);
+    parsedDate = new Date(d);
+  }
+
   const q = `
     INSERT INTO
       series (id,name,tagline,description,air_date, in_production, image,language,network,url)
@@ -145,9 +156,10 @@ export async function createSeries(series) {
     RETURNING *
   `;
   try {
+    const imgUrl = await uploadImg(`./data/img/${image}`);
     const result = await query(
-      q, [id, name, tagline, description, new Date(d),
-        inProduction, image, language, network, homepage],
+      q, [id, name, tagline, description, parsedDate,
+        inProduction, imgUrl, language, network, homepage],
     );
     return result.rows[0];
   } catch (e) {
