@@ -1,17 +1,18 @@
 import csv from 'csvtojson';
-import { createSeries, createSeasons,createEpisodes, addGenresSeriesConnection } from './tv.js';
+import {
+  createSeries, createSeasons, createEpisodes, addGenresSeriesConnection,
+} from './tv.js';
 
 const seriesCSV = './data/series.csv';
 const seasonsCSV = './data/seasons.csv';
 const episodesCSV = './data/episodes.csv';
 
-
-cosnt insertEpisodes = async () => {
+const insertEpisodes = async () => {
   const episodes = await csv().fromFile(episodesCSV);
   episodes.forEach(async (e) => {
     await createEpisodes(e);
-  })
-}
+  });
+};
 
 const insertSeasons = async () => {
   const seasons = await csv().fromFile(seasonsCSV);
@@ -37,6 +38,7 @@ const insertSeries = async () => {
 const setup = async () => {
   insertSeries();
   insertSeasons();
+  insertEpisodes();
 };
 
 setup();
