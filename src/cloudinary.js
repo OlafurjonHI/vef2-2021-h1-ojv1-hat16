@@ -1,14 +1,29 @@
 import dotenv from 'dotenv';
 import cloudinary from 'cloudinary';
 
-
-/**
- * Passa að hafa eftirfarandi í .env
- * CLOUDINARY_URL=cloudinary://674252999368618:_2Wdp8hH2sjb83MOyJSWo9fc3Oc@vef2-2021-h2
- */
 dotenv.config();
 
 const {
-  CLOUDINARY_URL,
+  cloud_name,
+  api_key,
+  api_secret,
 } = process.env;
 
+cloudinary.v2.config({
+  cloud_name,
+  api_key,
+  api_secret,
+});
+
+/**
+ *
+ *
+ * @param image path to image to be uploaded
+ */
+export function uploadImg(image) {
+  cloudinary.v2.uploader.upload(image, (error, result) => {
+    // eslint-disable-next-line no-console
+    console.log(result.url);
+    return result.url;
+  });
+}
