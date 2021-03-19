@@ -1,6 +1,6 @@
 import csv from 'csvtojson';
 //import { createUser } from './users.js';
-import { createSeries, findById } from './tv.js';
+import { createSeries } from './tv.js';
 
 const seriesCSV = './data/series.csv';
 
@@ -16,8 +16,8 @@ const insertSeries = async () => {
 };
 
 const setup = async () => {
-  //insertSeries();
-  let res = findById(1);
+  insertSeries();
+  // let res = findById(1);
 };
 
 setup();
