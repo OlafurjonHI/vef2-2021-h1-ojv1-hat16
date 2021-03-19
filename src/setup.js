@@ -1,23 +1,42 @@
 import csv from 'csvtojson';
-//import { createUser } from './users.js';
-import { createSeries, findById } from './tv.js';
+import { createSeries, createSeasons,createEpisodes, addGenresSeriesConnection } from './tv.js';
 
 const seriesCSV = './data/series.csv';
+const seasonsCSV = './data/seasons.csv';
+const episodesCSV = './data/episodes.csv';
+
+
+cosnt insertEpisodes = async () => {
+  const episodes = await csv().fromFile(episodesCSV);
+  episodes.forEach(async (e) => {
+    await createEpisodes(e);
+  })
+}
+
+const insertSeasons = async () => {
+  const seasons = await csv().fromFile(seasonsCSV);
+  seasons.forEach(async (s) => {
+    await (createSeasons(s));
+  });
+};
 
 const insertSeries = async () => {
   try {
     const series = await csv().fromFile(seriesCSV);
-    for(const s of series){
-      createSeries(s);
-    }
+    series.forEach(async (s) => {
+      await createSeries(s);
+      s.genres.split(',').forEach(async (g) => {
+        await addGenresSeriesConnection(s.id, g);
+      });
+    });
   } catch (e) {
-    console.log(e.message);
+    console.error(e.message);
   }
 };
 
 const setup = async () => {
-  //insertSeries();
-  let res = findById(1);
+  insertSeries();
+  insertSeasons();
 };
 
 setup();
