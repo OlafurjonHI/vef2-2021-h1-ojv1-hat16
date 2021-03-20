@@ -1,6 +1,8 @@
 /* eslint-disable camelcase */
 import express, { json } from 'express';
-import { getSeries, getSeriesById} from './tv.js';
+import {
+  getSeries, getSeriesById, getSeriesTotal, getSeasonTotalBySerieId, getSeasonsBySerieId,
+} from './tv.js';
 import { generateJson } from './helpers.js';
 
 // The root of this router is /tv as defined in app.js
@@ -13,7 +15,6 @@ router.get('/', async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
   const [items, total] = await getSeries(offset, limit);
   const { host } = req.headers;
-  console.log(req.hostname)
   const { baseUrl } = req;
   res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), items, total, `${host}${baseUrl}`));
 });
@@ -50,17 +51,20 @@ router.post('/', async (req, res) => {
  * Displays a TV series with respective data
  */
 router.get('/:id?', async (req, res) => {
-  const {id } = req.params;
+  const { id } = req.params;
   const jsonObject = await getSeriesById(id);
   res.json(jsonObject);
 });
-
 
 /**
  * Displays seasons of a series with respective data
  */
 router.get('/:id/season/', async (req, res) => {
-  // Finna seríu og svo alla series úr því
-
-
+  const { id } = req.params;
+  const { limit = 10, offset = 0 } = req.query;
+  const { host } = req.headers;
+  const { baseUrl } = req;
+  const seasons = await getSeasonsBySerieId(id, offset, limit);
+  const { total } = await getSeasonTotalBySerieId(id);
+  res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), seasons, total, `${host}${baseUrl}`));
 });

@@ -11,7 +11,7 @@ export async function getSeries(offset = 0, limit = 10) {
     );
     const items = result.rows;
     const total = await getSeriesTotal();
-    return [items,total.total];
+    return [items, total.total];
   } catch (e) {
     console.error(e);
   }
@@ -22,7 +22,7 @@ export async function getSeriesTotal() {
   SELECT count(*) as total FROM series
 `;
   try {
-    let  result = await query(
+    const result = await query(
       q, [],
     );
     return result.rows[0];
@@ -31,7 +31,6 @@ export async function getSeriesTotal() {
   }
   return null;
 }
-
 
 export async function getSeriesById(id) {
   const q = 'SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series where id = $1';
@@ -49,6 +48,31 @@ export async function getSeriesById(id) {
   serie.genres = genres;
   serie.seasons = seasons;
   return serie;
+}
+
+export async function getSeasonTotalBySerieId(serieId) {
+  const q = `
+    SELECT count(*) as total FROM seasons WHERE serie_id = $1;
+  `;
+  try {
+    const result = await query(
+      q, [serieId],
+    );
+    return result.rows[0];
+  } catch (e) {
+    console.error(e);
+  }
+  return null;
+}
+
+export async function getSeasonsBySerieId(serieId, offset = 0, limit = 10) {
+  const q = 'SELECT id,name,number,air_date,overview,poster FROM seasons where serie_id = $1 ORDER BY id asc OFFSET $2 LIMIT $3';
+  const result = await query(q, [serieId, offset, limit]);
+  const seasons = result.rows;
+  console.log('Seasons result row');
+  console.log(seasons);
+
+  return seasons;
 }
 
 // name,number,airDate,overview,season,serie,serieId
