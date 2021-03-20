@@ -71,19 +71,21 @@ export async function findById(id) {
   return null;
 }
 
-export async function createUser(username, password, email, admin) {
+export async function createUser(req) {
   // Geymum hashað password!
+  const { username, email, password } = req.body;
+  console.log(req.body);
   const hashedPassword = await bcrypt.hash(password, 11);
-
+  return 'SUP';
   const q = `
     INSERT INTO
-      users (username, password, email, admin)
+      users (username, password, email)
     VALUES ($1, $2, $3,$4)
     RETURNING *
   `;
 
   try {
-    const result = await query(q, [username, hashedPassword, email, admin]);
+    const result = await query(q, [username, hashedPassword, email]);
     return result.rows[0];
   } catch (e) {
     console.error(e);

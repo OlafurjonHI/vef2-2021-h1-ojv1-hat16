@@ -14,7 +14,9 @@ router.get('/', async (req, res) => {
   const items = await getSeries(offset, limit);
   const { host } = req.headers;
   const { baseUrl } = req;
-  res.send(generateJson(parseInt(limit, 10), parseInt(offset, 10), items, `${host}${baseUrl}`));
+  const methods = {};
+  methods.methods = ["GET","POST"];
+  res.send(generateJson(parseInt(limit, 10), parseInt(offset, 10), items, `${host}${baseUrl}`,methods));
 });
 
 /**
