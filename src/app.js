@@ -31,6 +31,9 @@ app.use(express.static(join(path, '../public')));
 // Breyti til að prófa smá
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
+// app.use(express.bodyParser());
+app.use(express.json()); // Þurfum til að taka á móti json í post
+
 app.use(session({
   secret: sessionSecret,
   resave: false,

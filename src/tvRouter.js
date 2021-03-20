@@ -26,25 +26,41 @@ router.get('/', async (req, res) => {
  *
  * Enables admin users to create new TV shows
  */
+/**
+  {
+    "name": "Testname",
+    "air_date": "2021-03-20T19:35:44.477Z",
+    "in_production": true,
+    "tagline": "This is a testing tagline",
+    "image": "https://www.erkomideldgos.is/",
+    "description": "This is a very descriptive test",
+    "language": "en",
+    "network": "network test",
+    "url": "fake url for a test"
+  }
+ */
 router.post('/', async (req, res) => {
   const {
-    name, air_date, in_production, tagline, image, description, language, network, url,
+    id, name, air_date, in_production, tagline, image, description, language, network, url,
   } = req.body;
 
   const values = [
-    name, air_date, in_production, tagline,
+    id, name, air_date, in_production, tagline,
     image, description, language, network, url,
   ];
+  console.log(values);
+  console.log(req.body);
+  res.send({ response: 'thanks' });
 
-  const q = `
+/*   const q = `
     INSERT INTO series
-      (name, air_date, in_production, tagline,
+      (id, name, air_date, in_production, tagline,
       image, description, language, network, url)
     VALUES
-      ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+      ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
     `;
 
-  query(q, values);
+  query(q, values); */
 });
 
 /**
