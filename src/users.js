@@ -87,7 +87,7 @@ export async function getUsersTotal() {
 
 export async function getAllUsers(offset = 0, limit = 10) {
   const q = `
-  SELECT username,email,admin FROM users ORDER BY id asc OFFSET $1 LIMIT $2 
+  SELECT username,email,admin FROM users ORDER BY id asc OFFSET $1 LIMIT $2
 `;
   try {
     const result = await query(

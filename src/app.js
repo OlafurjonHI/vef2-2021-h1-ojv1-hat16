@@ -27,7 +27,13 @@ const path = dirname(fileURLToPath(import.meta.url));
 // Sér um að req.body innihaldi gögn úr formi
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(path, '../public')));
-app.set('view engine', 'html');
+// app.set('view engine', 'html');
+// Breyti til að prófa smá
+app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: true }));
+// app.use(express.bodyParser());
+app.use(express.json()); // Þurfum til að taka á móti json í post
+
 app.use(session({
   secret: sessionSecret,
   resave: false,
@@ -43,7 +49,10 @@ app.use(session({
  */
 // eslint-disable-next-line no-unused-vars
 function notFoundHandler(req, res, next) {
-  res.status(404).send('error:{Not Found}');
+  // const title = 'Síða fannst ekki';
+  // res.status(404).render('error', { title });
+  res.status(404);
+  res.send({ status: 'fannst ekki' });
 }
 
 /**
@@ -60,7 +69,6 @@ function errorHandler(err, req, res, next) {
   res.status(500).send('Error Getting request');
 }
 
-// Hafa fall hér sem hlustar á '/' og skilar lista af mögulegum aðgerðum.
 app.use('/tv', tvRouter);
 app.use('/users', userRouter);
 app.get('/', (_, res) => {
