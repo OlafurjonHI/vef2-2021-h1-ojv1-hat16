@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
-import express, { json } from 'express';
+import express from 'express';
 import {
-  getSeries, getSeriesById, getSeriesTotal, getSeasonTotalBySerieId,
+  getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
   insertSeries,
 } from './tv.js';

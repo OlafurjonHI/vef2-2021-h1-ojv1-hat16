@@ -75,7 +75,7 @@ export async function getUsersTotal() {
   SELECT count(*) as total FROM users
 `;
   try {
-    let  result = await query(
+    const result = await query(
       q, [],
     );
     return result.rows[0];
@@ -84,7 +84,6 @@ export async function getUsersTotal() {
   }
   return null;
 }
-
 
 export async function getAllUsers(offset = 0, limit = 10) {
   const q = `

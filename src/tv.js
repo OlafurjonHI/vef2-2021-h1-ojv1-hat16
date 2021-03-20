@@ -1,6 +1,20 @@
 import { uploadImg } from './cloudinary.js';
 import { query } from './db.js';
 
+export async function getSeriesTotal() {
+  const q = `
+  SELECT count(*) as total FROM series
+`;
+  try {
+    const result = await query(
+      q, [],
+    );
+    return result.rows[0];
+  } catch (e) {
+    console.error(e);
+  }
+  return null;
+}
 export async function getSeries(offset = 0, limit = 10) {
   const q = `
   SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series ORDER BY id asc OFFSET $1 LIMIT $2
@@ -12,20 +26,6 @@ export async function getSeries(offset = 0, limit = 10) {
     const items = result.rows;
     const total = await getSeriesTotal();
     return [items, total.total];
-  } catch (e) {
-    console.error(e);
-  }
-  return null;
-}
-export async function getSeriesTotal() {
-  const q = `
-  SELECT count(*) as total FROM series
-`;
-  try {
-    const result = await query(
-      q, [],
-    );
-    return result.rows[0];
   } catch (e) {
     console.error(e);
   }
