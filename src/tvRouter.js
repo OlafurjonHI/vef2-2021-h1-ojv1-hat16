@@ -21,6 +21,7 @@ router.get('/', async (req, res) => {
 
 /**
  * TODO: Ensure admin is logged in
+ *       Nota custom fall í tv.js í stað kalls á query hér
  *
  * Enables admin users to create new TV shows
  */
@@ -57,6 +58,16 @@ router.get('/:id?', async (req, res) => {
 });
 
 /**
+ * TODO
+ */
+router.patch('/:id?');
+
+/**
+ * TODO
+ */
+router.delete('/:id?');
+
+/**
  * Displays seasons of a series with respective data
  */
 router.get('/:id/season/', async (req, res) => {
@@ -68,3 +79,43 @@ router.get('/:id/season/', async (req, res) => {
   const { total } = await getSeasonTotalBySerieId(id);
   res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), seasons, total, `${host}${baseUrl}`));
 });
+
+/**
+ * TODO
+ */
+router.post('/:id/season/');
+
+/**
+ * TODO
+ */
+router.get('/tv/:id/season/:id');
+
+/**
+ * TODO
+ */
+router.delete('/tv/:id/season/:id');
+
+/**
+ * TODO
+ */
+router.post('/tv/:id/season/:id/episode/');
+
+/**
+ * TODO
+ */
+router.get('/tv/:id/season/:id/episode/:id');
+
+/**
+ * TODO
+ */
+router.delete('/tv/:id/season/:id/episode/:id');
+
+/**
+ * TODO
+ */
+router.get('/genres');
+
+/**
+ * TODO
+ */
+router.post('/genres');
