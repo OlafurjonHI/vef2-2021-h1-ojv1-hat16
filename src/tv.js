@@ -3,13 +3,15 @@ import { query } from './db.js';
 
 export async function getSeriesTotal() {
   const q = `
-  SELECT count(*) as total FROM series
+  SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series ORDER BY id asc OFFSET $1 LIMIT $2
 `;
   try {
     const result = await query(
       q, [],
     );
-    return result.rows[0];
+    const items = result.rows;
+    const total = await getSeriesTotal();
+    return [items, total.total];
   } catch (e) {
     console.error(e);
   }
@@ -21,7 +23,7 @@ export async function getSeries(offset = 0, limit = 10) {
 `;
   try {
     const result = await query(
-      q, [offset, limit],
+      q, [],
     );
     const items = result.rows;
     const total = await getSeriesTotal();
