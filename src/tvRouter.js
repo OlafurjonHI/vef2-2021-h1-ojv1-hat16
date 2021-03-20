@@ -13,6 +13,7 @@ router.get('/', async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
   const [items, total] = await getSeries(offset, limit);
   const { host } = req.headers;
+  console.log(req.hostname)
   const { baseUrl } = req;
   res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), items, total, `${host}${baseUrl}`));
 });

@@ -1,65 +1,61 @@
 import express from 'express';
-import { body, validationResult } from 'express-validator';
-import xss from 'xss';
+import { Strategy } from 'passport-local';
+import passport, { strat } from './login.js';
+
 import { createUser, getAllUsers } from './users.js';
 import { generateJson } from './helpers.js';
+import {
+  validationMiddleware, xssSanitizationMiddleware, validationCheck, sanitizationMiddleware,
+} from './validation.js';
 
 // The root of this router is /users as defined in app.js
 export const router = express.Router();
-
-/**
- *
- */
-const validationMiddleware = [
-  body('username')
-    .isLength({ min: 1,max: 256 })
-    .withMessage('username is required, max 256 characters'),
-  body('email')
-    .isEmail()
-    .withMessage('Invalid Value'),
-  body('email')
-    .isLength({ min: 1, max: 256})
-    .withMessage('email is required, max 256 characters'),
-  body('password')
-    .isLength({ min: 10, max: 256})
-    .withMessage('password is required, min 10 characters, max 256 characters'),
-];
-
-// Viljum keyra sér og með validation, ver gegn „self XSS“
-const xssSanitizationMiddleware = [
-  body('username').customSanitizer((v) => xss(v)),
-  body('email').customSanitizer((v) => xss(v)),
-];
-
-const sanitizationMiddleware = [
-  body('username').trim().escape(),
-];
-
-async function validationCheck(req, res, next) {
-  const validation = validationResult(req);
-  if (!validation.isEmpty()) {
-    return res.send(validation.errors);
+passport.use(new Strategy(strat));
+router.use(passport.initialize());
+router.use(passport.session());
+router.use((req, res, next) => {
+  if (req.isAuthenticated()) {
+    // getum núna notað user í viewum
+    res.locals.user = req.user;
+  } else {
+    res.locals.user = null;
   }
 
-  return next();
+  next();
+});
+export function ensureLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  const error = {};
+  error.error = 'invalid token';
+  return res.json(error);
+}
+
+export function ensureAdmin(req, res, next) {
+  if (req.isAuthenticated() && res.locals.user.admin) {
+    return next();
+  }
+
+  return res.send('Must be admin');
 }
 
 function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
 }
 
-router.get('/', async (req, res) => {
+// TO IS ADMIN
+router.get('/', ensureAdmin, async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
-  const [items,total] = await getAllUsers(offset, limit);
+  const [items, total] = await getAllUsers(offset, limit);
   const { host } = req.headers;
   const { baseUrl } = req;
-  res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), items,total, `${host}${baseUrl}`));
+  res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), items, total, `${host}${baseUrl}`));
 });
 
 router.post('/register',
-validationMiddleware,
-xssSanitizationMiddleware,
-catchErrors(validationCheck),
-sanitizationMiddleware,
-catchErrors(createUser));
-  
+  validationMiddleware,
+  xssSanitizationMiddleware,
+  catchErrors(validationCheck),
+  sanitizationMiddleware,
+  catchErrors(createUser));

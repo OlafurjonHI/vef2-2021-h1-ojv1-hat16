@@ -27,6 +27,14 @@ export function ensureLoggedIn(req, res, next) {
 
   return res.redirect('/admin/login');
 }
+
+export function ensureAdmin(req, res, next) {
+  if (req.isAuthenticated() && res.locals.user.admin) {
+    return next();
+  }
+
+  return res.redirect('/admin/login');
+}
 /**
  * Higher-order fall sem umlykur async middleware með villumeðhöndlun.
  *
@@ -45,7 +53,7 @@ router.post(
   // Ef við komumst hingað var notandi skráður inn, senda á /admin
   (req, res) => {
     req.session.user = res.locals.user;
-    res.redirect('/admin');
+    next();
   },
 );
 
