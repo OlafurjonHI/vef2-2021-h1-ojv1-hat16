@@ -1,37 +1,37 @@
-import pg from 'pg';
-import dotenv from 'dotenv';
 import { uploadImg } from './cloudinary.js';
+import { query } from './db.js';
 
-dotenv.config();
-
-const {
-  DATABASE_URL: connectionString,
-  NODE_ENV: nodeEnv = 'development',
-} = process.env;
-
-const ssl = nodeEnv !== 'development' ? { rejectUnauthorized: false } : false;
-
-const pool = new pg.Pool({ connectionString, ssl });
-
-pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
-});
-
-export async function query(q, values = []) {
-  const client = await pool.connect();
-  let result;
-
+export async function getSeries(offset = 0, limit = 10) {
+  const q = `
+  SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series ORDER BY id asc OFFSET $1 LIMIT $2 
+`;
   try {
-    result = await client.query(q, values);
-  } catch (err) {
-    console.error('Villa í query', err);
-    throw err;
-  } finally {
-    client.release();
+    const result = await query(
+      q, [offset, limit],
+    );
+    return result.rows;
+  } catch (e) {
+    console.error(e);
   }
+  return null;
+}
 
-  return result;
+export async function getSeriesById(id) {
+  const q = 'SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series where id = $1';
+  let result = await query(q, [id]);
+  const serie = result.rows[0];
+  // TODO BÆTA INN RATING
+  const q2 = 'SELECT genres_name AS name FROM series_genres where series_id = $1';
+  result = await query(q2, [id]);
+  const genres = result.rows;
+
+  const q3 = 'SELECT name,number,air_date,overview,poster FROM seasons where serie_id = $1';
+  result = await query(q3, [id]);
+  const seasons = result.rows;
+
+  serie.genres = genres;
+  serie.seasons = seasons;
+  return serie;
 }
 
 // name,number,airDate,overview,season,serie,serieId

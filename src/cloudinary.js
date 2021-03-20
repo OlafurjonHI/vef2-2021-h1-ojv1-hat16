@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import dotenv from 'dotenv';
 import cloudinary from 'cloudinary';
 

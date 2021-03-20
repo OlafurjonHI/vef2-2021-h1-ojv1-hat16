@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
-import express from 'express';
-import { query, insert } from './db.js';
+import express, { json } from 'express';
+import { getSeries, getSeriesById} from './tv.js';
+import { generateJson } from './helpers.js';
 
 // The root of this router is /tv as defined in app.js
 export const router = express.Router();
@@ -9,8 +10,11 @@ export const router = express.Router();
  * Displays a page with TV shows and basic data.
  */
 router.get('/', async (req, res) => {
-  const q = 'SELECT * FROM episode';
-  res.send(await query(q));
+  const { limit = 10, offset = 0 } = req.query;
+  const items = await getSeries(offset, limit);
+  const { host } = req.headers;
+  const { baseUrl } = req;
+  res.send(generateJson(parseInt(limit, 10), parseInt(offset, 10), items, `${host}${baseUrl}`));
 });
 
 /**
@@ -43,6 +47,7 @@ router.post('/', async (req, res) => {
  *
  */
 router.get('/:id?', async (req, res) => {
-  const id = req.params;
-
+  const {id } = req.params;
+  const jsonObject =  await getSeriesById(id);
+  res.send(JSON.stringify(jsonObject));
 });

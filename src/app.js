@@ -60,8 +60,8 @@ function errorHandler(err, req, res, next) {
 // Hafa fall hér sem hlustar á '/' og skilar lista af mögulegum aðgerðum.
 app.use('/tv', tvRouter);
 app.use('/users', userRouter);
-app.get('/', (req,res)=>{
-  res.send("Velkominn");
+app.get('/', (req, res) => {
+  res.send('Velkominn');
 });
 app.use(notFoundHandler);
 app.use(errorHandler);
