@@ -3,6 +3,7 @@ import express, { json } from 'express';
 import {
   getSeries, getSeriesById, getSeriesTotal, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
+  insertSeries,
 } from './tv.js';
 import { generateJson } from './helpers.js';
 
@@ -23,6 +24,7 @@ router.get('/', async (req, res) => {
 /**
  * TODO: Ensure admin is logged in
  *       Nota custom fall í tv.js í stað kalls á query hér
+ *       Græja upload á myndum
  *
  * Enables admin users to create new TV shows
  */
@@ -40,27 +42,10 @@ router.get('/', async (req, res) => {
   }
  */
 router.post('/', async (req, res) => {
-  const {
-    id, name, air_date, in_production, tagline, image, description, language, network, url,
-  } = req.body;
+  const result = await insertSeries(req.body);
+  res.json(result);
 
-  const values = [
-    id, name, air_date, in_production, tagline,
-    image, description, language, network, url,
-  ];
-  console.log(values);
-  console.log(req.body);
-  res.send({ response: 'thanks' });
-
-/*   const q = `
-    INSERT INTO series
-      (id, name, air_date, in_production, tagline,
-      image, description, language, network, url)
-    VALUES
-      ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
-    `;
-
-  query(q, values); */
+  // res.send({ response: 'thanks mather, for my life' });
 });
 
 /**

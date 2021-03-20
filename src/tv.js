@@ -87,7 +87,6 @@ export async function getEpisodesBySerieIdAndSeason(serieId, seasonNumber, offse
   return result;
 }
 
-
 // name,number,airDate,overview,season,serie,serieId
 export async function createEpisodes(episode) {
   const {
@@ -195,6 +194,46 @@ export async function addGenresSeriesConnection(id, genre) {
   }
 
   return null;
+}
+
+export async function insertSeries(series) {
+  const {
+    name, airDate, inProduction, tagline, image, description, language, network, url,
+  } = series;
+  console.log(series);
+
+  // Þurfum að finna út úr því hvernig við ætlum að höndla myndir
+  // TODO ákveða hvernig við höndlum myndir
+
+  let imgUrl;
+  try {
+    // Fyrir testing reasons notum við static test mynd
+    const testImage = './test-image.png';
+    imgUrl = await uploadImg(testImage);
+
+    // const imgUrl = await uploadImg(`./data/img/${image}`);
+  } catch (e) {
+    console.error(e);
+  }
+
+  const q = `INSERT INTO
+    series (name, tagline, description, air_date,
+      in_production, image, language, network, url)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    RETURNING *;
+    `;
+
+  console.log([name, tagline, description, airDate, inProduction,
+    imgUrl, language, network, url]);
+
+  const result = await query(
+    q, [name, tagline, description, airDate, inProduction,
+      imgUrl, language, network, url],
+  );
+
+  console.log(result.rows);
+
+  return result;
 }
 
 export async function createSeries(series) {
