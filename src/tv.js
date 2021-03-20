@@ -23,7 +23,7 @@ export async function getSeries(offset = 0, limit = 10) {
 `;
   try {
     const result = await query(
-      q, [],
+      q, [offset, limit],
     );
     const items = result.rows;
     const total = await getSeriesTotal();
