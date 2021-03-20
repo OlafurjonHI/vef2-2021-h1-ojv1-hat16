@@ -28,7 +28,6 @@ const path = dirname(fileURLToPath(import.meta.url));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(path, '../public')));
 app.set('view engine', 'html');
-app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: sessionSecret,
   resave: false,
@@ -44,8 +43,7 @@ app.use(session({
  */
 // eslint-disable-next-line no-unused-vars
 function notFoundHandler(req, res, next) {
-  const title = 'Síða fannst ekki';
-  res.status(404).render('error', { title });
+  res.status(404).send('error:{Not Found}');
 }
 
 /**

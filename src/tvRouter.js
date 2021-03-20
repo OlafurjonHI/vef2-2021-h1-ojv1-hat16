@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import express, { json } from 'express';
-import { getSeries, getSeriesById} from './tv.js';
+import { getSeries, getSeriesById } from './tv.js';
 import { generateJson } from './helpers.js';
 
 // The root of this router is /tv as defined in app.js
@@ -13,7 +13,6 @@ router.get('/', async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
   const [items, total] = await getSeries(offset, limit);
   const { host } = req.headers;
-  console.log(req.hostname)
   const { baseUrl } = req;
   res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), items, total, `${host}${baseUrl}`));
 });
@@ -23,7 +22,7 @@ router.get('/', async (req, res) => {
  *
  * Enables admin users to create new TV shows
  */
-router.post('/', async (req, res) => {
+router.post('/', async (req, _) => {
   const {
     name, air_date, in_production, tagline, image, description, language, network, url,
   } = req.body;
@@ -48,7 +47,7 @@ router.post('/', async (req, res) => {
  *
  */
 router.get('/:id?', async (req, res) => {
-  const {id } = req.params;
+  const { id } = req.params;
   const jsonObject = await getSeriesById(id);
   res.json(jsonObject);
 });
