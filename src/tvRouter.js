@@ -49,6 +49,6 @@ router.post('/', async (req, res) => {
  */
 router.get('/:id?', async (req, res) => {
   const {id } = req.params;
-  const jsonObject =  await getSeriesById(id);
+  const jsonObject = await getSeriesById(id);
   res.json(jsonObject);
 });
