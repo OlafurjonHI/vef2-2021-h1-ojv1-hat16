@@ -23,10 +23,12 @@ if (!sessionSecret) {
 }
 
 const app = express();
-
+const path = dirname(fileURLToPath(import.meta.url));
 // Sér um að req.body innihaldi gögn úr formi
 app.use(express.urlencoded({ extended: true }));
-
+app.use(express.static(join(path, '../public')));
+app.use(express.urlencoded({ extended: true }));
+app.set('view engine', 'html');
 /**
  * Middleware sem sér um 404 villur.
  *
