@@ -3,15 +3,13 @@ import { query } from './db.js';
 
 export async function getSeriesTotal() {
   const q = `
-  SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series ORDER BY id asc OFFSET $1 LIMIT $2
+  SELECT count(*) as total FROM series
 `;
   try {
     const result = await query(
       q, [],
     );
-    const items = result.rows;
-    const total = await getSeriesTotal();
-    return [items, total.total];
+    return result.rows[0];
   } catch (e) {
     console.error(e);
   }

@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
-import express, { json } from 'express';
+import express from 'express';
 import {
-  getSeries, getSeriesById, getSeriesTotal, getSeasonTotalBySerieId,
+  getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
 } from './tv.js';
 import { generateJson } from './helpers.js';
@@ -48,8 +48,6 @@ router.post('/', async (req, res) => {
     id, name, air_date, in_production, tagline,
     image, description, language, network, url,
   ];
-  console.log(values);
-  console.log(req.body);
   res.send({ response: 'thanks' });
 
 /*   const q = `
