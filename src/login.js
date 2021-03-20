@@ -21,19 +21,14 @@ export const jwtOptions = {
   secretOrKey: jwtSecret,
 };
 
-export async function strat(username, password, done) {
-  try {
-    const user = await findByUsername(username);
-    if (!user) {
-      return done(null, false);
-    }
-    // Verður annað hvort notanda hlutur ef lykilorð rétt, eða false
-    const result = await comparePasswords(password, user.password);
-    if (result) return done(null, user);
-    return done(null, false);
-  } catch (err) {
-    console.error(err);
-    return done(err);
+export async function strat(data, next) {
+  // fáum id gegnum data sem geymt er í token
+  const user = await findByUsername(data.username);
+
+  if (user) {
+    next(null, user);
+  } else {
+    next(null, false);
   }
 }
 passport.use(new Strategy(jwtOptions, strat));
@@ -69,7 +64,7 @@ export function requireAuthentication(req, res, next) {
       if (err) {
         return next(err);
       }
-
+      console.log(user)
       if (!user) {
         const error = info.name === 'TokenExpiredError'
           ? 'expired token' : 'invalid token';
