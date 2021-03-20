@@ -1,7 +1,8 @@
 /* eslint-disable camelcase */
 import express, { json } from 'express';
 import {
-  getSeries, getSeriesById, getSeriesTotal, getSeasonTotalBySerieId, getSeasonsBySerieId,
+  getSeries, getSeriesById, getSeriesTotal, getSeasonTotalBySerieId,
+  getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
 } from './tv.js';
 import { generateJson } from './helpers.js';
 
@@ -86,9 +87,22 @@ router.get('/:id/season/', async (req, res) => {
 router.post('/:id/season/');
 
 /**
- * TODO
+ * TODO: Remove "serie_id" og serie í svari
+ *
+ * Skilar stöku season fyrir þátt með grunnupplýsingum, fylki af þáttum
+ * Sýnilausn inniheldur ekki paging.
+ * :id = seriesId
+ * :seasonId = season í serie :id
  */
-router.get('/tv/:id/season/:id');
+router.get('/:id/season/:seasonId?', async (req, res) => {
+  const { id, seasonId } = req.params;
+  let result = await getSeasonsBySerieIdAndSeason(id, seasonId);
+  const season = result.rows[0];
+  result = await getEpisodesBySerieIdAndSeason(id, seasonId);
+  const episodes = result.rows;
+  season.episodes = episodes;
+  res.json(season);
+});
 
 /**
  * TODO

@@ -69,11 +69,24 @@ export async function getSeasonsBySerieId(serieId, offset = 0, limit = 10) {
   const q = 'SELECT id,name,number,air_date,overview,poster FROM seasons where serie_id = $1 ORDER BY id asc OFFSET $2 LIMIT $3';
   const result = await query(q, [serieId, offset, limit]);
   const seasons = result.rows;
-  console.log('Seasons result row');
-  console.log(seasons);
 
   return seasons;
 }
+
+export async function getSeasonsBySerieIdAndSeason(serieId, seasonNumber) {
+  const q = 'SELECT * FROM seasons WHERE serie_id = $1 AND number = $2;';
+  const result = await query(q, [serieId, seasonNumber]);
+
+  return result;
+}
+
+export async function getEpisodesBySerieIdAndSeason(serieId, seasonNumber, offset = 0, limit = 50) {
+  const q = 'SELECT * FROM episode WHERE serie_id = $1 AND season = $2 OFFSET $3 LIMIT $4;';
+  const result = await query(q, [serieId, seasonNumber, offset, limit]);
+
+  return result;
+}
+
 
 // name,number,airDate,overview,season,serie,serieId
 export async function createEpisodes(episode) {

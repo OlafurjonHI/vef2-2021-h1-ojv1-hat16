@@ -27,7 +27,9 @@ const path = dirname(fileURLToPath(import.meta.url));
 // Sér um að req.body innihaldi gögn úr formi
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(path, '../public')));
-app.set('view engine', 'html');
+// app.set('view engine', 'html');
+// Breyti til að prófa smá
+app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: sessionSecret,
@@ -44,8 +46,10 @@ app.use(session({
  */
 // eslint-disable-next-line no-unused-vars
 function notFoundHandler(req, res, next) {
-  const title = 'Síða fannst ekki';
-  res.status(404).render('error', { title });
+  // const title = 'Síða fannst ekki';
+  // res.status(404).render('error', { title });
+  res.status(404);
+  res.send({ status: 'fannst ekki' });
 }
 
 /**
