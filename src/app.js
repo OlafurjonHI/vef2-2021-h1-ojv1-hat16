@@ -27,7 +27,6 @@ const path = dirname(fileURLToPath(import.meta.url));
 // Sér um að req.body innihaldi gögn úr formi
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(path, '../public')));
-app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'html');
 /**
  * Middleware sem sér um 404 villur.
@@ -56,11 +55,10 @@ function errorHandler(err, req, res, next) {
   res.status(500).send('Error Getting request');
 }
 
-// Hafa fall hér sem hlustar á '/' og skilar lista af mögulegum aðgerðum.
 app.use('/tv', tvRouter);
 app.use('/users', userRouter);
 app.get('/', (_, res) => {
-  res.json('{"tv":{"series":{"href":"/tv","methods":["GET","POST"]},"serie":{"href":"/tv/{id}","methods":["GET","PATCH","DELETE"]},"rate":{"href":"/tv/{id}/rate","methods":["POST","PATCH","DELETE"]},"state":{"href":"/tv/{id}/state","methods":["POST","PATCH","DELETE"]}},"seasons":{"seasons":{"href":"/tv/{id}/season","methods":["GET","POST"]},"season":{"href":"/tv/{id}/season/{season}","methods":["GET","DELETE"]}},"episodes":{"episodes":{"href":"/tv/{id}/season/{season}/episode","methods":["POST"]},"episode":{"href":"/tv/{id}/season/{season}/episode/{episode}","methods":["GET","DELETE"]}},"genres":{"genres":{"href":"/genres","methods":["GET","POST"]}},"users":{"users":{"href":"/users","methods":["GET"]},"user":{"href":"/users/{id}","methods":["GET","PATCH"]},"register":{"href":"/users/register","methods":["POST"]},"login":{"href":"/users/login","methods":["POST"]},"me":{"href":"/users/me","methods":["GET","PATCH"]}}}');
+  res.json(JSON.parse('{"tv":{"series":{"href":"/tv","methods":["GET","POST"]},"serie":{"href":"/tv/{id}","methods":["GET","PATCH","DELETE"]},"rate":{"href":"/tv/{id}/rate","methods":["POST","PATCH","DELETE"]},"state":{"href":"/tv/{id}/state","methods":["POST","PATCH","DELETE"]}},"seasons":{"seasons":{"href":"/tv/{id}/season","methods":["GET","POST"]},"season":{"href":"/tv/{id}/season/{season}","methods":["GET","DELETE"]}},"episodes":{"episodes":{"href":"/tv/{id}/season/{season}/episode","methods":["POST"]},"episode":{"href":"/tv/{id}/season/{season}/episode/{episode}","methods":["GET","DELETE"]}},"genres":{"genres":{"href":"/genres","methods":["GET","POST"]}},"users":{"users":{"href":"/users","methods":["GET"]},"user":{"href":"/users/{id}","methods":["GET","PATCH"]},"register":{"href":"/users/register","methods":["POST"]},"login":{"href":"/users/login","methods":["POST"]},"me":{"href":"/users/me","methods":["GET","PATCH"]}}}'));
 });
 app.use(notFoundHandler);
 app.use(errorHandler);

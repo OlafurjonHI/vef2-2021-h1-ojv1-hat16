@@ -3,6 +3,11 @@ import {
   createSeries, createSeasons, createEpisodes, addGenresSeriesConnection,
 } from './tv.js';
 
+/**
+ * TODO
+ * Fall sem býr til normal user og Admin user við keyrslu á setup.js
+ */
+
 const seriesCSV = './data/series.csv';
 const seasonsCSV = './data/seasons.csv';
 const episodesCSV = './data/episodes.csv';
@@ -19,7 +24,6 @@ const insertSeasons = async () => {
   seasons.forEach(async (s) => {
     await (createSeasons(s));
   });
-
 };
 
 const insertSeries = async () => {
@@ -34,12 +38,11 @@ const insertSeries = async () => {
   } catch (e) {
     console.error(e.message);
   }
-
 };
 
 const setup = async () => {
-insertSeries();
-insertSeasons();
+  insertSeries();
+  insertSeasons();
   insertEpisodes();
 };
 

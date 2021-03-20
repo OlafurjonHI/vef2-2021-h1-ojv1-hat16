@@ -3,7 +3,7 @@ import { query } from './db.js';
 
 export async function getSeries(offset = 0, limit = 10) {
   const q = `
-  SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series ORDER BY id asc OFFSET $1 LIMIT $2 
+  SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series ORDER BY id asc OFFSET $1 LIMIT $2
 `;
   try {
     let  result = await query(

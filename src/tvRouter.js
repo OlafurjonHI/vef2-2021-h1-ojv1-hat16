@@ -45,10 +45,22 @@ router.post('/', async (req, res) => {
 });
 
 /**
+ * TODO: Add avarage rating, rating count.
  *
+ * Displays a TV series with respective data
  */
 router.get('/:id?', async (req, res) => {
-  const {id } = req.params;
+  const { id } = req.params;
   const jsonObject =  await getSeriesById(id);
   res.json(jsonObject);
+});
+
+
+/**
+ * Displays seasons of a series with respective data
+ */
+router.get('/:id/season/', async (req, res) => {
+  // Finna seríu og svo alla series úr því
+
+
 });
