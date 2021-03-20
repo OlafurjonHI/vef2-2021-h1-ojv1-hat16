@@ -1,6 +1,8 @@
 import express from 'express';
 import { Strategy } from 'passport-local';
-import passport, { strat, requireAuthentication, loginUser, jwtOptions} from './login.js';
+import passport, {
+  strat, requireAuthentication, loginUser, jwtOptions, isAdmin
+} from './login.js';
 
 import { createUser, getAllUsers } from './users.js';
 import { generateJson } from './helpers.js';
@@ -18,8 +20,7 @@ function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
 }
 
-// TO IS ADMIN
-router.get('/', requireAuthentication, async (req, res) => {
+router.get('/', requireAuthentication, isAdmin, async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
   const [items, total] = await getAllUsers(offset, limit);
   const { host } = req.headers;

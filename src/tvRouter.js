@@ -5,6 +5,7 @@ import {
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
   insertSeries,
 } from './tv.js';
+import {requireAuthentication, isAdmin} from './login.js';
 import { generateJson } from './helpers.js';
 
 // The root of this router is /tv as defined in app.js
@@ -13,7 +14,7 @@ export const router = express.Router();
 /**
  * Displays a page with TV shows and basic data.
  */
-router.get('/', async (req, res) => {
+router.get('/',requireAuthentication,isAdmin, async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
   const [items, total] = await getSeries(offset, limit);
   const { host } = req.headers;
@@ -41,7 +42,7 @@ router.get('/', async (req, res) => {
     "url": "fake url for a test"
   }
  */
-router.post('/', async (req, res) => {
+router.post('/',requireAuthentication, isAdmin, async (req, res) => {
   const result = await insertSeries(req.body);
   res.json(result);
 

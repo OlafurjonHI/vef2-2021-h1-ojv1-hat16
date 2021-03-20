@@ -23,7 +23,7 @@ export const jwtOptions = {
 
 export async function strat(data, next) {
   // fáum id gegnum data sem geymt er í token
-  const user = await findByUsername(data.username);
+  const user = await findByUsername(data.id);
 
   if (user) {
     next(null, user);
@@ -48,12 +48,19 @@ export async function loginUser(req, res) {
     const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
     const result = {};
     result.user = user;
-    result.token = token
+    result.token = token;
     result.expiresIn = tokenLifetime;
     return res.json(result);
   }
 
   return res.status(401).json({ error: 'Invalid password' });
+}
+
+export function isAdmin(req, res, next) {
+  if (req.user.admin) {
+    next();
+  }
+  res.status(401).json({ error: 'Unauthorized' });
 }
 
 export function requireAuthentication(req, res, next) {
@@ -64,7 +71,6 @@ export function requireAuthentication(req, res, next) {
       if (err) {
         return next(err);
       }
-      console.log(user)
       if (!user) {
         const error = info.name === 'TokenExpiredError'
           ? 'expired token' : 'invalid token';
