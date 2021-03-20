@@ -4,6 +4,8 @@ import { fileURLToPath } from 'url';
 import express from 'express';
 import dotenv from 'dotenv';
 import session from 'express-session';
+import { router as tvRouter } from './tvRouter.js';
+import { router as userRouter } from './usersRouter.js';
 // import { format } from 'date-fns';
 // import { router as registrationRouter } from './registration.js';
 // import { router as adminRouter } from './admin.js';
@@ -53,6 +55,9 @@ function errorHandler(err, req, res, next) {
   res.status(500).render('error', { title });
 }
 
+// Hafa fall hér sem hlustar á '/' og skilar lista af mögulegum aðgerðum.
+app.use('/tv', tvRouter);
+app.use('/users', userRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 

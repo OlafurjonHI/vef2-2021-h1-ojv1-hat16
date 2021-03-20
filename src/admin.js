@@ -20,7 +20,7 @@ router.use((req, res, next) => {
 
   next();
 });
-function ensureLoggedIn(req, res, next) {
+export function ensureLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
