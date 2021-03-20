@@ -6,15 +6,32 @@ export async function getSeries(offset = 0, limit = 10) {
   SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series ORDER BY id asc OFFSET $1 LIMIT $2 
 `;
   try {
-    const result = await query(
+    let  result = await query(
       q, [offset, limit],
     );
-    return result.rows;
+    const items = result.rows;
+    const total = await getSeriesTotal();
+    return [items,total.total];
+  } catch (e) {
+    console.erorr(e);
+  }
+  return null;
+}
+export async function getSeriesTotal() {
+  const q = `
+  SELECT count(*) as total FROM series
+`;
+  try {
+    let  result = await query(
+      q, [],
+    );
+    return result.rows[0];
   } catch (e) {
     console.error(e);
   }
   return null;
 }
+
 
 export async function getSeriesById(id) {
   const q = 'SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series where id = $1';

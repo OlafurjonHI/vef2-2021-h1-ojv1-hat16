@@ -11,12 +11,10 @@ export const router = express.Router();
  */
 router.get('/', async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
-  const items = await getSeries(offset, limit);
+  const [items, total] = await getSeries(offset, limit);
   const { host } = req.headers;
   const { baseUrl } = req;
-  const methods = {};
-  methods.methods = ["GET","POST"];
-  res.send(generateJson(parseInt(limit, 10), parseInt(offset, 10), items, `${host}${baseUrl}`,methods));
+  res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), items, total, `${host}${baseUrl}`));
 });
 
 /**
@@ -51,5 +49,5 @@ router.post('/', async (req, res) => {
 router.get('/:id?', async (req, res) => {
   const {id } = req.params;
   const jsonObject =  await getSeriesById(id);
-  res.send(JSON.stringify(jsonObject));
+  res.json(jsonObject);
 });

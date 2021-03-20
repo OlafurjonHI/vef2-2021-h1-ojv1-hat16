@@ -70,17 +70,47 @@ export async function findById(id) {
 
   return null;
 }
+export async function getUsersTotal() {
+  const q = `
+  SELECT count(*) as total FROM users
+`;
+  try {
+    let  result = await query(
+      q, [],
+    );
+    return result.rows[0];
+  } catch (e) {
+    console.error(e);
+  }
+  return null;
+}
+
+
+export async function getAllUsers(offset = 0, limit = 10) {
+  const q = `
+  SELECT username,email,admin FROM users ORDER BY id asc OFFSET $1 LIMIT $2 
+`;
+  try {
+    const result = await query(
+      q, [offset, limit],
+    );
+    const total = await getUsersTotal();
+    const items = result.rows;
+    return [items, total];
+  } catch (e) {
+    console.error(e);
+  }
+  return null;
+}
 
 export async function createUser(req) {
   // Geymum hashað password!
   const { username, email, password } = req.body;
-  console.log(req.body);
   const hashedPassword = await bcrypt.hash(password, 11);
-  return 'SUP';
   const q = `
     INSERT INTO
       users (username, password, email)
-    VALUES ($1, $2, $3,$4)
+    VALUES ($1, $2, $3)
     RETURNING *
   `;
 
