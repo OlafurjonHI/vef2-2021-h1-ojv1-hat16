@@ -50,8 +50,8 @@ router.post('/', async (req, res) => {
  * Displays a TV series with respective data
  */
 router.get('/:id?', async (req, res) => {
-  const { id } = req.params;
-  const jsonObject =  await getSeriesById(id);
+  const {id } = req.params;
+  const jsonObject = await getSeriesById(id);
   res.json(jsonObject);
 });
 

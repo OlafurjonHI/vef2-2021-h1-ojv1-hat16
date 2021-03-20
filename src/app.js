@@ -28,6 +28,13 @@ const path = dirname(fileURLToPath(import.meta.url));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(path, '../public')));
 app.set('view engine', 'html');
+app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: sessionSecret,
+  resave: false,
+  saveUninitialized: false,
+}));
+
 /**
  * Middleware sem sér um 404 villur.
  *

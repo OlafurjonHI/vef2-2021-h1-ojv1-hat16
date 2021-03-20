@@ -16,6 +16,15 @@ export const validationMiddleware = [
     .withMessage('password is required, min 10 characters, max 256 characters'),
 ];
 
+export const loginValidationMiddleware = [
+  body('username')
+    .isLength({ min: 1, max: 256 })
+    .withMessage('username is required, max 256 characters'),
+  body('password')
+    .isLength({ min: 10, max: 256 })
+    .withMessage('password is required, min 10 characters, max 256 characters'),
+];
+
 // Viljum keyra sér og með validation, ver gegn „self XSS“
 export const xssSanitizationMiddleware = [
   body('username').customSanitizer((v) => xss(v)),

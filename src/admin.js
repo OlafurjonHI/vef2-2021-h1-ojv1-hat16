@@ -1,40 +1,12 @@
 /* eslint-disable no-underscore-dangle */
 import express from 'express';
-import { Strategy } from 'passport-local';
-import passport, { strat } from './login.js';
+
 
 import { getList } from './registration.js';
 import { deleteRow } from './db.js';
 
 export const router = express.Router();
-passport.use(new Strategy(strat));
-router.use(passport.initialize());
-router.use(passport.session());
-router.use((req, res, next) => {
-  if (req.isAuthenticated()) {
-    // getum núna notað user í viewum
-    res.locals.user = req.user;
-  } else {
-    res.locals.user = null;
-  }
 
-  next();
-});
-export function ensureLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-
-  return res.redirect('/admin/login');
-}
-
-export function ensureAdmin(req, res, next) {
-  if (req.isAuthenticated() && res.locals.user.admin) {
-    return next();
-  }
-
-  return res.redirect('/admin/login');
-}
 /**
  * Higher-order fall sem umlykur async middleware með villumeðhöndlun.
  *
@@ -44,16 +16,14 @@ export function ensureAdmin(req, res, next) {
 
 router.post(
   '/login',
-
   // Þetta notar strat að ofan til að skrá notanda inn
   passport.authenticate('local', {
-    failureMessage: 'Notandanafn eða lykilorð vitlaust.',
-    failureRedirect: '/admin/login',
+    failureMessage: 'Invalid logon,
   }),
   // Ef við komumst hingað var notandi skráður inn, senda á /admin
   (req, res) => {
     req.session.user = res.locals.user;
-    next();
+    res.send("Login Success")
   },
 );
 
