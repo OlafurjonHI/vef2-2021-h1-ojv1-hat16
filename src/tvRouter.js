@@ -140,7 +140,9 @@ router.delete('/:id/season/:seasonId?',
   async (req, res) => {
     const { id, seasonId } = req.params;
     const result = await deleteSeasonByIdAndNumber(id, seasonId);
-    res.json(result);
+    if (result === 0) res.status(404).json({ error: 'episode not found' });
+
+    res.json({});
   });
 
 /**
@@ -157,7 +159,7 @@ router.post('/:id/season/:seasonId/episode/',
     // console.log(req.body);
     const result = await insertEpisode(req.body, id, seasonId);
     res.json(result.rows[0]);
-});
+  });
 
 /**
  * TODO
@@ -171,8 +173,11 @@ router.get('/:sid/season/:seid/episode/:eid', async (req, res) => {
 /**
  * TODO
  */
-router.delete('/:sid/season/:seid/episode/:eid', async (req, res) => {
-  const deleted = await (deleteEpisodeBySeasonAndSerie(req.params));
-  if (deleted === 0) res.status(401).json({ error: 'episode not found' });
-  res.json({});
-});
+router.delete('/:sid/season/:seid/episode/:eid',
+  requireAuthentication,
+  isAdmin,
+  async (req, res) => {
+    const deleted = await (deleteEpisodeBySeasonAndSerie(req.params));
+    if (deleted === 0) res.status(404).json({ error: 'episode not found' });
+    res.json({});
+  });
