@@ -317,3 +317,8 @@ export async function deleteFromTable(table, column, id) {
 
   return result;
 }
+
+export async function deleteSeasonByIdAndNumber(seriesId, seasonNumber) {
+  const q = 'DELETE FROM seasons WHERE serie_id = $1 AND number = $2;';
+  const result = await query(q, [seriesId, seasonNumber]);
+}

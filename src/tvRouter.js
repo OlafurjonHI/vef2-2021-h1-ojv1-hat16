@@ -3,7 +3,8 @@ import express, { response } from 'express';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
-  insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons, getEpisodeBySeasonIdBySerieId,
+  insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons, 
+  getEpisodeBySeasonIdBySerieId,
 } from './tv.js';
 
 import { seasonsValidationMiddleware, catchErrors, validationCheck } from './validation.js';
@@ -78,9 +79,8 @@ router.patch('/:id?', requireAuthentication, isAdmin, async (req, res) => {
  * TODO: Birta rétt JSON þegar ekki er neitt til að eyða.
  *
  * eyðir sjónvarpsþátt, aðeins ef notandi er stjórnandi
- * requireAuthentication, isAdmin,
  */
-router.delete('/:id?', async (req, res) => {
+router.delete('/:id?', requireAuthentication, isAdmin, async (req, res) => {
   const { id } = req.params;
   await deleteFromTable('series_genres', 'series_id', id);
   await deleteFromTable('series', 'id', id);
@@ -114,12 +114,9 @@ router.post('/:id/season/',
   });
 
 /**
- * TODO: Remove "serie_id" og serie í svari
+ * TODO: Villumeðhöndlun ef seria eða season er ekki til
  *
  * Skilar stöku season fyrir þátt með grunnupplýsingum, fylki af þáttum
- * Sýnilausn inniheldur ekki paging.
- * :id = seriesId
- * :seasonId = season í serie :id
  */
 router.get('/:id/season/:seasonId?', async (req, res) => {
   const { id, seasonId } = req.params;
@@ -133,9 +130,16 @@ router.get('/:id/season/:seasonId?', async (req, res) => {
 });
 
 /**
- * TODO
+ * Eyðir season, aðeins ef notandi er stjórnandi
  */
-router.delete('/tv/:id/season/:id');
+router.delete('/:id/season/:seasonId?',
+  requireAuthentication,
+  isAdmin,
+  async (req, res) => {
+    const { id, seasonId } = req.params;
+    const result = await deleteSeasonByIdAndNumber(id, seasonId);
+    res.json(result);
+  });
 
 /**
  * TODO
