@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
-import express from 'express';
+import express, { response } from 'express';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
-  insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons,
+  insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons, getEpisodeBySeasonIdBySerieId,
 } from './tv.js';
 
 import { seasonsValidationMiddleware, catchErrors, validationCheck } from './validation.js';
@@ -127,6 +127,7 @@ router.get('/:id/season/:seasonId?', async (req, res) => {
   const season = result.rows[0];
   result = await getEpisodesBySerieIdAndSeason(id, seasonId);
   const episodes = result.rows;
+  if (!episodes) res.status(404).json({ error: 'season not found' });
   season.episodes = episodes;
   res.json(season);
 });
@@ -144,7 +145,11 @@ router.post('/tv/:id/season/:id/episode/');
 /**
  * TODO
  */
-router.get('/tv/:id/season/:id/episode/:id');
+router.get('/:sid/season/:seid/episode/:eid', async (req, res) => {
+  const episode = await getEpisodeBySeasonIdBySerieId(req.params);
+  if (!episode) res.status(404).json({ error: 'episode not found' });
+  res.json(episode);
+});
 
 /**
  * TODO
