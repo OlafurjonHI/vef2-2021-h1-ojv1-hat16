@@ -61,11 +61,9 @@ router.get('/:id?', async (req, res) => {
 });
 
 /**
- * TODO: requireAuthentication, isAdmin
- *
  * Uppfærir sjónvarpsþátt, reit fyrir reit, aðeins ef notandi er stjórnandi
  */
-router.patch('/:id?', async (req, res) => {
+router.patch('/:id?', requireAuthentication, isAdmin, async (req, res) => {
   const { id } = req.params;
   Object.keys(req.body).forEach(async (key) => {
     await updateSeries(key, req.body[key], id);
