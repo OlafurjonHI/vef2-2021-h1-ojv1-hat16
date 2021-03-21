@@ -155,7 +155,7 @@ export async function getEpisodesBySerieIdAndSeason(serieId, seasonNumber, offse
   const q = 'SELECT name, number, air_date, overview FROM episode WHERE serie_id = $1 AND season = $2 ORDER BY number OFFSET $3 LIMIT $4;';
   const result = await query(q, [serieId, seasonNumber, offset, limit]);
 
-  return result;
+  return result.rows;
 }
 
 export async function getEpisodeBySeasonIdBySerieId(data) {
