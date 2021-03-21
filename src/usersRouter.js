@@ -10,7 +10,7 @@ import {
 import { generateJson, getFilteredUser } from './helpers.js';
 import {
   validationMiddleware, xssSanitizationMiddleware, validationCheck,
-  sanitizationMiddleware, loginValidationMiddleware, catchErrors,userAdminValidationMiddleware,
+  sanitizationMiddleware, loginValidationMiddleware, catchErrors, userAdminValidationMiddleware,
 } from './validation.js';
 
 // The root of this router is /users as defined in app.js

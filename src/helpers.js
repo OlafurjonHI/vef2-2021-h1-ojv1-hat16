@@ -11,7 +11,6 @@ export const generateJson = (limit, offset, items, total, path) => {
   return jsonObject;
 };
 
-
 export const getFilteredUser = (user) => {
   const {
     username, email, admin, created, updated,
@@ -24,4 +23,4 @@ export const getFilteredUser = (user) => {
   filteredUser.created = created;
   filteredUser.updated = updated;
   return filteredUser;
-}
+};

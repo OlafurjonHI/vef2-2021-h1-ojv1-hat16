@@ -113,7 +113,6 @@ export async function updateUser(email, password, id) {
   if (i !== max) {
     console.error('Failed to update User');
   }
-  console.log(result)
   return result.rows[0];
 }
 

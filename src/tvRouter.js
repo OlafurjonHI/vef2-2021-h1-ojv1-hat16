@@ -6,7 +6,7 @@ import {
   insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons,
 } from './tv.js';
 
-import { seasonsValidationMiddleware, catchErrors, validationCheck} from './validation.js';
+import { seasonsValidationMiddleware, catchErrors, validationCheck } from './validation.js';
 import { requireAuthentication, isAdmin } from './login.js';
 import { generateJson } from './helpers.js';
 
@@ -82,8 +82,8 @@ router.patch('/:id?', requireAuthentication, isAdmin, async (req, res) => {
  */
 router.delete('/:id?', async (req, res) => {
   const { id } = req.params;
-  const series_genresResult = await deleteFromTable('series_genres', 'series_id', id);
-  const seriesResult = await deleteFromTable('series', 'id', id);
+  await deleteFromTable('series_genres', 'series_id', id);
+  await deleteFromTable('series', 'id', id);
   res.json({});
 });
 

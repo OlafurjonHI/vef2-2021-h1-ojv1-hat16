@@ -1,4 +1,4 @@
-import { body, validationResult, check } from 'express-validator';
+import { body, validationResult } from 'express-validator';
 import xss from 'xss';
 
 export const validationMiddleware = [
@@ -36,7 +36,6 @@ export const seasonsValidationMiddleware = [
   body('serie')
     .isLength({ min: 1, max: 256 })
     .withMessage('serie is required, max 256 characters'),
-
 
 ];
 export function catchErrors(fn) {
