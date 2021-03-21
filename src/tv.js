@@ -67,7 +67,18 @@ export async function getSeries(offset = 0, limit = 10) {
   return null;
 }
 
-export async function getSeriesById(id) {
+export async function getSerieRatingByUserId(serieId, userId) {
+  const total = await getTotalRatingCountsForSerie(serieId);
+  if (total === 0) return 0;
+  const q = `
+  SELECT rating FROM users_series WHERE series_id = $1 AND user_id = $2
+`;
+  const result = await query(q, [serieId, userId]);
+
+  return result.rows[0];
+}
+
+export async function getSeriesById(id, userId) {
   const q = 'SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series where id = $1';
   let result = await query(q, [id]);
   const serie = result.rows[0];
@@ -82,6 +93,10 @@ export async function getSeriesById(id) {
   const [avgRating, total] = await getAvarageSerieRating(id);
   serie.avaragerating = avgRating;
   serie.ratingCount = total.total;
+  if (userId){
+    const userRating = await getSerieRatingByUserId(id, userId);
+    serie.rating = (userRating) ? userRating : "unrated";
+  }
   serie.genres = genres;
   serie.seasons = seasons;
   return serie;

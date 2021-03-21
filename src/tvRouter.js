@@ -11,6 +11,7 @@ import {
 import { seasonsValidationMiddleware, catchErrors, validationCheck } from './validation.js';
 import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
 import { generateJson } from './helpers.js';
+import { findByUsername } from './users.js';
 
 // The root of this router is /tv as defined in app.js
 export const router = express.Router();
@@ -60,14 +61,20 @@ router.post('/', requireAuthentication, isAdmin, async (req, res) => {
  */
 router.get('/:id?', async (req, res) => {
   const { id } = req.params;
-  const jsonObject = await getSeriesById(id);
-  const authorization = req.headers.authorization.split(' ')[1];
-  const userId = 0;
+  let userId = null;
   try {
-    getUserIdFromToken(authorization);
+    const authorization = req.headers.authorization.split(' ')[1];
+    const user = await findByUsername(getUserIdFromToken(authorization));
+    userId = user.id;
+
   } catch (e) {
-    console.log('token invalid');
+    console.log(e);
   }
+  console.log(userId)
+  const jsonObject = await getSeriesById(id, userId);
+  
+
+
   res.json(jsonObject);
 });
 
