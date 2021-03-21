@@ -1,5 +1,10 @@
 /* eslint-disable camelcase */
 import express from 'express';
+import multer from 'multer';
+
+import {
+  storage, uploadImg, uploadStream, upload,
+} from './cloudinary.js';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
@@ -10,12 +15,16 @@ import {
 } from './tv.js';
 import {
   seasonsValidationMiddleware, catchErrors, validationCheck, rateValidationMiddleware,
-  stateValidationMiddleware, isSeriesValid, isSeasonValid, seriesValidationMiddleware,
-  superSanitizationMiddleware,
+  stateValidationMiddleware, isSeriesValid, isSeasonValid, isImageValid,
 } from './validation.js';
 import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
 import { generateJson } from './helpers.js';
-import { findByUsername, updateUserUpdatedTimeStamp } from './users.js';
+import { findByUsername } from './users.js';
+
+// const storage = multer.memoryStorage();
+
+const multerUploads = multer({ storage });
+
 // Rótin á þessum router er '/tv' eins og skilgreint er í app.js
 export const router = express.Router();
 
@@ -32,6 +41,9 @@ router.get('/', async (req, res) => {
 
 /**
  * TODO: Græja upload á myndum
+    requireAuthentication,
+    isAdmin,
+    isImageValid,
  */
 router.post('/',
   requireAuthentication,
