@@ -50,6 +50,13 @@ export async function getSeriesById(id) {
   return serie;
 }
 
+export async function getOnlySeriesById(id) {
+  const q = 'SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series where id = $1';
+  const result = await query(q, [id]);
+  const serie = result.rows[0];
+  return serie;
+}
+
 export async function getSeasonTotalBySerieId(serieId) {
   const q = `
     SELECT count(*) as total FROM seasons WHERE serie_id = $1;
@@ -264,4 +271,11 @@ export async function createSeries(series) {
   }
 
   return null;
+}
+
+export async function updateSeries(column, value, id) {
+  const q = `UPDATE series SET ${column} = $1 WHERE id = $2 RETURNING *`;
+  // const q = 'UPDATE series SET name = $2 WHERE id = $3';
+  const result = await query(q, [value.toString(), parseInt(id, 10)]);
+  return result;
 }

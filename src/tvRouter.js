@@ -3,9 +3,9 @@ import express from 'express';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
-  insertSeries,
+  insertSeries, updateSeries, getOnlySeriesById,
 } from './tv.js';
-import {requireAuthentication, isAdmin} from './login.js';
+import { requireAuthentication, isAdmin } from './login.js';
 import { generateJson } from './helpers.js';
 
 // The root of this router is /tv as defined in app.js
@@ -14,7 +14,7 @@ export const router = express.Router();
 /**
  * Displays a page with TV shows and basic data.
  */
-router.get('/',requireAuthentication,isAdmin, async (req, res) => {
+router.get('/', requireAuthentication, isAdmin, async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
   const [items, total] = await getSeries(offset, limit);
   const { host } = req.headers;
@@ -42,9 +42,9 @@ router.get('/',requireAuthentication,isAdmin, async (req, res) => {
     "url": "fake url for a test"
   }
  */
-router.post('/',requireAuthentication, isAdmin, async (req, res) => {
+router.post('/', requireAuthentication, isAdmin, async (req, res) => {
   const result = await insertSeries(req.body);
-  res.json(result);
+  res.json(result.rows);
 
   // res.send({ response: 'thanks mather, for my life' });
 });
@@ -61,9 +61,18 @@ router.get('/:id?', async (req, res) => {
 });
 
 /**
- * TODO
+ * TODO: requireAuthentication, isAdmin
+ *
+ * Uppfærir sjónvarpsþátt, reit fyrir reit, aðeins ef notandi er stjórnandi
  */
-router.patch('/:id?');
+router.patch('/:id?', async (req, res) => {
+  const { id } = req.params;
+  Object.keys(req.body).forEach(async (key) => {
+    await updateSeries(key, req.body[key], id);
+  });
+  const result = await getOnlySeriesById(id);
+  res.send(result);
+});
 
 /**
  * TODO
