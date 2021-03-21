@@ -77,6 +77,16 @@ export async function getSerieRatingByUserId(serieId, userId) {
 
   return result.rows[0];
 }
+export async function getSerieStatusByUserId(serieId, userId) {
+  const total = await getTotalRatingCountsForSerie(serieId);
+  if (total === 0) return 0;
+  const q = `
+  SELECT status FROM users_series WHERE series_id = $1 AND user_id = $2
+`;
+  const result = await query(q, [serieId, userId]);
+
+  return result.rows[0];
+}
 
 export async function getSeriesById(id, userId) {
   const q = 'SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series where id = $1';
@@ -92,10 +102,12 @@ export async function getSeriesById(id, userId) {
   const seasons = result.rows;
   const [avgRating, total] = await getAvarageSerieRating(id);
   serie.avaragerating = avgRating;
-  serie.ratingCount = total.total;
-  if (userId){
+  serie.ratingCount = parseInt(total.total, 10);
+  if (userId) {
     const userRating = await getSerieRatingByUserId(id, userId);
-    serie.rating = (userRating) ? userRating : "unrated";
+    serie.rating = (userRating) || 'unrated';
+    const userStatus = await getSerieRatingByUserId(id, userId);
+    serie.status = userStatus;
   }
   serie.genres = genres;
   serie.seasons = seasons;
