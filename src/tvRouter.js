@@ -1,10 +1,9 @@
 /* eslint-disable camelcase */
 import express from 'express';
 import multer from 'multer';
+import cloudinary from 'cloudinary';
 
-import {
-  storage, uploadImg, uploadStream, upload,
-} from './cloudinary.js';
+import { uploadImg, uploadStream, upload } from './cloudinary.js';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
@@ -15,19 +14,28 @@ import {
 } from './tv.js';
 import {
   seasonsValidationMiddleware, catchErrors, validationCheck, rateValidationMiddleware,
-  stateValidationMiddleware, isSeriesValid, isSeasonValid, isImageValid,
+  stateValidationMiddleware, isSeriesValid, isSeasonValid, isImageValid, superSanitizationMiddleware,
+  seriesValidationMiddleware,
 } from './validation.js';
 import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
 import { generateJson } from './helpers.js';
 import { findByUsername } from './users.js';
 
 // const storage = multer.memoryStorage();
-
-const multerUploads = multer({ storage });
-
-// Rótin á þessum router er '/tv' eins og skilgreint er í app.js
 export const router = express.Router();
+const storage = multer.memoryStorage();
+const multerUploads = multer({ storage });
+// Rótin á þessum router er '/tv' eins og skilgreint er í app.js
 
+router.post('/test',
+  multerUploads.single('image'),
+  async (req, res) => {
+    const encoded = req.file.buffer.toString('base64');
+    cloudinary.v2.uploader.upload(encoded, (resp, rej) => {
+      console.log(resp, res);
+      res.json(resp);
+    });
+  });
 /**
  * Skilar síðum af sjónvarpsþáttum með grunnupplýsingum
  */
@@ -245,7 +253,7 @@ router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchE
 /**
  * Skráir stöðu innskráðs notanda á sjónvarpsþætti, aðeins fyrir innskráða notendur
  */
-router.post('/:id/state', requireAuthentication, stateValidationMiddleware, catchErrors(validationCheck), superSanitizationMiddleware,async (req, res) => {
+router.post('/:id/state', requireAuthentication, stateValidationMiddleware, catchErrors(validationCheck), superSanitizationMiddleware, async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
   const authorization = req.headers.authorization.split(' ')[1];
