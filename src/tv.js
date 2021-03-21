@@ -324,10 +324,8 @@ export async function deleteSeasonByIdAndNumber(seriesId, seasonNumber) {
 }
 
 export async function deleteEpisodeBySeasonAndSerie(data) {
-  console.log(data)
   const { sid, seid, eid } = data;
   const q = 'DELETE FROM episode WHERE serie_id = $1 AND season = $2 AND number = $3;';
   const result = await query(q, [parseInt(sid, 10), parseInt(seid, 10), parseInt(eid, 10)]);
-  console.log(result);
   return result.rowCount;
 }
