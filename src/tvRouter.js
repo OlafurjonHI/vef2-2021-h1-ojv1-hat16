@@ -75,16 +75,16 @@ router.patch('/:id?', requireAuthentication, isAdmin, async (req, res) => {
 });
 
 /**
+ * TODO: Birta rétt JSON þegar ekki er neitt til að eyða.
+ *
  * eyðir sjónvarpsþátt, aðeins ef notandi er stjórnandi
  * requireAuthentication, isAdmin,
  */
 router.delete('/:id?', async (req, res) => {
   const { id } = req.params;
-  await deleteFromTable('series_genres', 'id', id);
-  await deleteFromTable('series', 'series_id', id);
-  const result = await getSeries();
-  return result;
-  // deleteFromTable('series', id);
+  const series_genresResult = await deleteFromTable('series_genres', 'series_id', id);
+  const seriesResult = await deleteFromTable('series', 'id', id);
+  res.json({});
 });
 
 /**

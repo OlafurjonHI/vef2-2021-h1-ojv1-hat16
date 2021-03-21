@@ -95,15 +95,15 @@ export async function getSeasonsBySerieId(serieId, offset = 0, limit = 10) {
   return seasons;
 }
 
-export async function getSeasonsBySerieIdAndSeason(serieId, seasonNumber) {
-  const q = 'SELECT * FROM seasons WHERE serie_id = $1 AND number = $2;';
-  const result = await query(q, [serieId, seasonNumber]);
+export async function getSeasonsBySerieIdAndSeason(serieId, seasonNumber, offset = 0, limit = 10) {
+  const q = 'SELECT id, name, number, air_date, overview, poster FROM seasons WHERE serie_id = $1 AND number = $2 OFFSET $3 LIMIT $4;';
+  const result = await query(q, [serieId, seasonNumber, offset, limit]);
 
   return result;
 }
 
 export async function getEpisodesBySerieIdAndSeason(serieId, seasonNumber, offset = 0, limit = 10) {
-  const q = 'SELECT * FROM episode WHERE serie_id = $1 AND season = $2 OFFSET $3 LIMIT $4;';
+  const q = 'SELECT name, number, air_date, overview FROM episode WHERE serie_id = $1 AND season = $2 ORDER BY number OFFSET $3 LIMIT $4;';
   const result = await query(q, [serieId, seasonNumber, offset, limit]);
 
   return result;
@@ -306,7 +306,7 @@ export async function updateSeries(column, value, id) {
 
 export async function deleteFromTable(table, column, id) {
   const q = `DELETE FROM ${table} WHERE ${column} = $1;`;
-  const result = query(q, [parseInt(id, 10)]);
+  const result = query(q, [id]);
 
   return result;
 }
