@@ -2,11 +2,7 @@ import csv from 'csvtojson';
 import {
   createSeries, createSeasons, createEpisodes, addGenresSeriesConnection,
 } from './tv.js';
-
-/**
- * TODO
- * Fall sem býr til normal user og Admin user við keyrslu á setup.js
- */
+import { createAdmin, createUser } from './users.js';
 
 const seriesCSV = './data/series.csv';
 const seasonsCSV = './data/seasons.csv';
@@ -44,6 +40,10 @@ const setup = async () => {
   insertSeries();
   insertSeasons();
   insertEpisodes();
+  createAdmin();
+  const req = {}
+  req.body = { username: 'verybasicuser', password: '1234567890', email: 'avarage@joe.is' }
+  createUser(req);
 };
 
 setup();

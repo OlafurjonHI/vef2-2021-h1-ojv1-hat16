@@ -2,6 +2,25 @@
 import { uploadImg } from './cloudinary.js';
 import { query } from './db.js';
 
+export async function getTotalRatingCountsForSerie(serieId) {
+  const q = `
+    SELECT count(*) as total FROM users_series WHERE series_id = $1;
+  `;
+  const result = await query(q, [serieId]);
+  return result.rows[0];
+}
+
+export async function getAvarageSerieRating(serieId) {
+  const total = await getTotalRatingCountsForSerie(serieId);
+  if (total === 0) return 0;
+  const q = `
+  SELECT avg(rating) as total FROM users_series WHERE series_id = $1;
+`;
+  const result = await query(q, [serieId]);
+  const avgRating = (result.rows[0].total) ? result.rows[0].total : 0;
+  return [avgRating, total];
+}
+
 export async function getSeriesTotal() {
   const q = `
   SELECT count(*) as total FROM series
@@ -60,7 +79,9 @@ export async function getSeriesById(id) {
   const q3 = 'SELECT name,number,air_date,overview,poster FROM seasons where serie_id = $1';
   result = await query(q3, [id]);
   const seasons = result.rows;
-
+  const [avgRating, total] = await getAvarageSerieRating(id);
+  serie.avaragerating = avgRating;
+  serie.ratingCount = total.total;
   serie.genres = genres;
   serie.seasons = seasons;
   return serie;

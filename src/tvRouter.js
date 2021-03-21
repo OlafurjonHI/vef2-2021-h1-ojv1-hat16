@@ -5,11 +5,11 @@ import {
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
   insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons,
   getEpisodeBySeasonIdBySerieId, deleteSeasonByIdAndNumber, deleteEpisodeBySeasonAndSerie,
-  insertEpisode,
+  insertEpisode, getAvarageSerieRating,
 } from './tv.js';
 
 import { seasonsValidationMiddleware, catchErrors, validationCheck } from './validation.js';
-import { requireAuthentication, isAdmin } from './login.js';
+import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
 import { generateJson } from './helpers.js';
 
 // The root of this router is /tv as defined in app.js
@@ -61,6 +61,13 @@ router.post('/', requireAuthentication, isAdmin, async (req, res) => {
 router.get('/:id?', async (req, res) => {
   const { id } = req.params;
   const jsonObject = await getSeriesById(id);
+  const authorization = req.headers.authorization.split(' ')[1];
+  const userId = 0;
+  try {
+    getUserIdFromToken(authorization);
+  } catch (e) {
+    console.log('token invalid');
+  }
   res.json(jsonObject);
 });
 

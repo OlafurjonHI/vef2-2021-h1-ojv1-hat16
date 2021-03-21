@@ -1,5 +1,9 @@
 # Vefforritun 2, 2021, hópverkefni 1
 
+## Notendur sem eru tilbúnir til notkunar eftir að keyrt er setup skrá
+admin: {'username':'admin','password':'1234567890','email':'admin@admin.is'}
+venjulegur: { 'username': 'verybasicuser', 'password': '1234567890', 'email': 'avarage@joe.is' }
+## Verkefnalýsing
 Útfæra skal vefþjónustur fyrir sjónvarpsþáttavef:
 
 * Gefin eru/verða gögn fyrir sjónvarpsþætti, season og staka þætti sem flytja þarf inn í gagnagrunn

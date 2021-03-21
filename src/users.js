@@ -153,3 +153,28 @@ export async function createUser(req) {
 
   return null;
 }
+
+export async function createAdmin() {
+  // Geymum hashað password!
+  const username = 'admin';
+  const password = '1234567890';
+  const email = 'admin@admin.is';
+  const admin = true;
+
+  const hashedPassword = await bcrypt.hash(password, 11);
+  const q = `
+    INSERT INTO
+      users (username, password, email,admin)
+    VALUES ($1, $2, $3,$4)
+    RETURNING *
+  `;
+
+  try {
+    const result = await query(q, [username, hashedPassword, email, admin]);
+    return result.rows[0];
+  } catch (e) {
+    console.error(e);
+  }
+
+  return null;
+}

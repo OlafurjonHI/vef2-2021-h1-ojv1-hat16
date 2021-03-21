@@ -38,7 +38,10 @@ router.post('/register',
   xssSanitizationMiddleware,
   catchErrors(validationCheck),
   sanitizationMiddleware,
-  catchErrors(createUser));
+  async (req, res) => {
+    const user = await createUser(req);
+    res.json(getFilteredUser(user));
+  });
 
 router.get('/me', requireAuthentication, async (req, res) => {
   const authorization = req.headers.authorization.split(' ')[1];
