@@ -10,6 +10,7 @@ import {
   createSerieRatingForUser,
   getSerieStatusByUserId,
   createSerieStateForUser,
+  getEpisodeTotalBySerieIdAndSeason,
 } from './tv.js';
 
 import {
@@ -136,16 +137,23 @@ router.post('/:id/season/', requireAuthentication, isAdmin,
  *
  * Skilar stöku season fyrir þátt með grunnupplýsingum, fylki af þáttum
  */
-router.get('/:id/season/:seasonId?', async (req, res) => {
-  const { id, seasonId } = req.params;
-  let result = await getSeasonsBySerieIdAndSeason(id, seasonId);
-  const season = result.rows[0];
-  result = await getEpisodesBySerieIdAndSeason(id, seasonId);
-  const episodes = result.rows;
-  if (!episodes) res.status(404).json({ error: 'season not found' });
-  season.episodes = episodes;
-  res.json(season);
-});
+router.get('/:id/season/:seasonId?',
+  seasonsValidationMiddleware,
+  async (req, res) => {
+    const { id, seasonId } = req.params;
+    const { limit = 10, offset = 0 } = req.query;
+    const { host } = req.headers;
+    const { baseUrl } = req;
+    let result = await getSeasonsBySerieIdAndSeason(id, seasonId, offset, limit);
+    if (!result) return res.status(404).json({ error: 'Series not found' });
+    const season = result;
+    result = await getEpisodesBySerieIdAndSeason(id, seasonId, offset, limit);
+    const episodes = result;
+    if (!episodes) return res.status(404).json({ error: 'season not found' });
+    const total = await getEpisodeTotalBySerieIdAndSeason(id, seasonId);
+    season.episodes = episodes;
+    res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), season, total, `${host}${baseUrl}`));
+  });
 
 /**
  * Eyðir season, aðeins ef notandi er stjórnandi
@@ -198,7 +206,7 @@ router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchE
   const authorization = req.headers.authorization.split(' ')[1];
   const user = await findByUsername(getUserIdFromToken(authorization));
   const ratingExists = await getSerieRatingByUserId(id, user.id);
-  console.log(ratingExists)
+  console.log(ratingExists);
   if (ratingExists) res.json({ errors: { value: `${rating}`, param: 'rating', message: 'value already exists, use PATCH to update' } });
   else {
     const row = await createSerieRatingForUser(rating, user.id, id);

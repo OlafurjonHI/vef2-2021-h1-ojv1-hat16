@@ -148,7 +148,7 @@ export async function getSeasonsBySerieIdAndSeason(serieId, seasonNumber, offset
   const q = 'SELECT id, name, number, air_date, overview, poster FROM seasons WHERE serie_id = $1 AND number = $2 OFFSET $3 LIMIT $4;';
   const result = await query(q, [serieId, seasonNumber, offset, limit]);
 
-  return result;
+  return result.rows;
 }
 
 export async function getEpisodesBySerieIdAndSeason(serieId, seasonNumber, offset = 0, limit = 10) {
@@ -163,6 +163,13 @@ export async function getEpisodeBySeasonIdBySerieId(data) {
   const q = 'SELECT name,number,air_date, overview,serie_id,season,serie from episode WHERE serie_id = $1 AND season = $2 AND number = $3;';
   const result = await query(q, [sid, seid, eid]);
   return result.rows[0];
+}
+
+export async function getEpisodeTotalBySerieIdAndSeason(serieId, seasonNumber) {
+  const q = 'SELECT COUNT(*) as total FROM episode WHERE serie_id = $1 AND season = $2;';
+  const result = await query(q, [serieId, seasonNumber]);
+  const { total } = result.rows[0];
+  return total;
 }
 
 export async function getGenres(offset = 0, limit = 10) {
@@ -415,4 +422,3 @@ export async function createSerieStateForUser(state, uid, sid) {
   const result = await query(q, [sid, uid, state]);
   return result.rows[0];
 }
-
