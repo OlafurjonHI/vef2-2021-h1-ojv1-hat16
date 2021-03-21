@@ -30,7 +30,6 @@ app.set('view engine', 'ejs');
 // app.use(express.bodyParser());
 app.use(express.json()); // Þurfum til að taka á móti json í post
 
-
 /**
  * Middleware sem sér um 404 villur.
  *
