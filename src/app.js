@@ -3,6 +3,8 @@ import { fileURLToPath } from 'url';
 
 import express from 'express';
 import dotenv from 'dotenv';
+import formidableMiddleware from 'express-formidable';
+import bodyParser from 'body-parser';
 
 import { router as tvRouter } from './tvRouter.js';
 import { router as userRouter } from './usersRouter.js';
@@ -23,12 +25,12 @@ const app = express();
 const path = dirname(fileURLToPath(import.meta.url));
 // Sér um að req.body innihaldi gögn úr formi
 app.use(express.static(join(path, '../public')));
-// app.set('view engine', 'html');
+
 // Breyti til að prófa smá
 app.set('view engine', 'ejs');
-// app.use(express.bodyParser());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json()); // Þurfum til að taka á móti json í post
-
+app.use(formidableMiddleware());
 
 /**
  * Middleware sem sér um 404 villur.

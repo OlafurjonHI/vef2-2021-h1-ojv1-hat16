@@ -1,11 +1,13 @@
 import express from 'express';
 import { Strategy } from 'passport-local';
 import passport, {
-  strat, requireAuthentication, loginUser, jwtOptions, isAdmin
+  strat, requireAuthentication, loginUser, jwtOptions, isAdmin, getUserIdFromToken,
 } from './login.js';
 
-import { createUser, getAllUsers } from './users.js';
-import { generateJson } from './helpers.js';
+import {
+  createUser, findById, findByUsername, getAllUsers, updateUserAdmin,
+} from './users.js';
+import { generateJson, getFilteredUser } from './helpers.js';
 import {
   validationMiddleware, xssSanitizationMiddleware, validationCheck,
   sanitizationMiddleware, loginValidationMiddleware,
@@ -41,3 +43,39 @@ router.post('/register',
   catchErrors(validationCheck),
   sanitizationMiddleware,
   catchErrors(createUser));
+
+router.get('/me', requireAuthentication, async (req, res) => {
+  const authorization = req.headers.authorization.split(' ')[1];
+  const userID = (getUserIdFromToken(authorization));
+  const user = await findByUsername(userID);
+  const filteredUser = getFilteredUser(user);
+  res.json(filteredUser);
+});
+
+router.patch('/me', requireAuthentication, async (req, res) => {
+    const authorization = req.headers.authorization.split(' ')[1];
+    const userID = (getUserIdFromToken(authorization));
+    const user = await findByUsername(userID);
+    const filteredUser = getFilteredUser(user);
+    res.json(filteredUser);
+  });
+
+router.get('/:id?', requireAuthentication, isAdmin, async (req, res) => {
+  const { id } = req.params;
+  const user = await findById(id);
+  const filteredUser = getFilteredUser(user);
+  res.json(filteredUser);
+});
+
+router.patch('/:id?', requireAuthentication, isAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { admin } = req.body;
+  if (!admin) {
+    res.json({ error: 'admin is required, either true or false' });
+  }
+  const user = await updateUserAdmin(admin, id);
+  if (!user) {
+    res.json({ error: 'operation failed' });
+  }
+  res.json(user);
+});

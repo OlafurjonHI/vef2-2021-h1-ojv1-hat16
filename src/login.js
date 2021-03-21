@@ -16,6 +16,11 @@ if (!jwtSecret) {
   process.exit(1);
 }
 
+export const getUserIdFromToken = (authorization) => {
+  const decoded = jwt.verify(authorization, jwtSecret);
+  return decoded.id;
+};
+
 export const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: jwtSecret,

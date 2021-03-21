@@ -10,3 +10,18 @@ export const generateJson = (limit, offset, items, total, path) => {
   if (offset + limit < total) jsonObject._links.next = { href: `http://${path}?offset=${offset + limit}&limit=${limit}` };
   return jsonObject;
 };
+
+
+export const getFilteredUser = (user) => {
+  const {
+    username, email, admin, created, updated,
+  } = user;
+  const filteredUser = {};
+  filteredUser.id = user.id;
+  filteredUser.username = username;
+  filteredUser.email = email;
+  filteredUser.admin = admin;
+  filteredUser.created = created;
+  filteredUser.updated = updated;
+  return filteredUser;
+}
