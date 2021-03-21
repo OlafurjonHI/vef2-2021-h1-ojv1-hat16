@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import express from 'express';
+import e from 'express';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
@@ -10,6 +11,7 @@ import {
   createSerieRatingForUser,
   getSerieStatusByUserId,
   createSerieStateForUser,
+  updateStateAndRatingForSerieAndUser,
 } from './tv.js';
 
 import {
@@ -198,9 +200,14 @@ router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchE
   const authorization = req.headers.authorization.split(' ')[1];
   const user = await findByUsername(getUserIdFromToken(authorization));
   const ratingExists = await getSerieRatingByUserId(id, user.id);
-  console.log(ratingExists)
-  if (ratingExists) res.json({ errors: { value: `${rating}`, param: 'rating', message: 'value already exists, use PATCH to update' } });
-  else {
+  const stateExists = await getSerieStatusByUserId(id, user.id);
+  if (ratingExists && ratingExists.rating && stateExists && stateExists.status) res.json({ errors: { value: `${rating}`, param: 'rating', message: 'value already exists, use PATCH to update' } });
+  else if (ratingExists && ratingExists.rating) res.json({ errors: { value: `${rating}`, param: 'rating', message: 'value already exists, use PATCH to update' } });
+  else if (stateExists) {
+    const row = await updateStateAndRatingForSerieAndUser(id, user.id, rating,
+      stateExists.status, false);
+    res.json(row);
+  } else {
     const row = await createSerieRatingForUser(rating, user.id, id);
     res.json(row);
   }
@@ -211,9 +218,14 @@ router.post('/:id/state', requireAuthentication, stateValidationMiddleware, catc
   const { state } = req.body;
   const authorization = req.headers.authorization.split(' ')[1];
   const user = await findByUsername(getUserIdFromToken(authorization));
+  const ratingExists = await getSerieRatingByUserId(id, user.id);
   const stateExists = await getSerieStatusByUserId(id, user.id);
-  if (stateExists) res.json({ errors: { value: `${state}`, param: 'state', message: 'value already exists, use PATCH to update' } });
-  else {
+  if (ratingExists && ratingExists.rating && stateExists && stateExists.status) res.json({ errors: { value: `${state}`, param: 'state', message: 'value already exists, use PATCH to update' } });
+  else if (stateExists && stateExists.status != null) res.json({ errors: { value: `${state}`, param: 'state', message: 'value already exists, use PATCH to update' } });
+  else if (ratingExists) {
+    const row = await updateStateAndRatingForSerieAndUser(id, user.id, ratingExists.rating, state);
+    res.json(row);
+  } else {
     const row = await createSerieStateForUser(state, user.id, id);
     res.json(row);
   }
