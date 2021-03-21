@@ -66,11 +66,9 @@ router.get('/:id?', async (req, res) => {
     const authorization = req.headers.authorization.split(' ')[1];
     const user = await findByUsername(getUserIdFromToken(authorization));
     userId = user.id;
-
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
-  console.log(userId)
   const jsonObject = await getSeriesById(id, userId);
   
 

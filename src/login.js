@@ -61,11 +61,12 @@ export async function loginUser(req, res) {
   return res.status(401).json({ error: 'Invalid password' });
 }
 
-export function isAdmin(req, res, next) {
-  if (req.user.admin) {
+export async function isAdmin(req, res, next) {
+  const authorization = req.headers.authorization.split(' ')[1];
+  const user = await findByUsername(getUserIdFromToken(authorization));
+  if (user.admin) {
     next();
-  }
-  res.status(401).json({ error: 'Unauthorized' });
+  } else res.status(401).json({ error: 'Unauthorized' });
 }
 
 export function requireAuthentication(req, res, next) {

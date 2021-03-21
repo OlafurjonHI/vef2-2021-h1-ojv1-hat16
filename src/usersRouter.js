@@ -79,5 +79,6 @@ router.patch('/:id?', requireAuthentication, isAdmin, userAdminValidationMiddlew
   if (!user) {
     res.json({ error: 'operation failed' });
   }
-  res.json(user);
+
+  res.json(getFilteredUser(user));
 });

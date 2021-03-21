@@ -43,7 +43,7 @@ export async function updateUserUpdatedTimeStamp(id) {
 }
 
 export async function updateUserAdmin(bool, id) {
-  const q = 'UPDATE users SET admin = $1 SET WHERE id = $2 RETURNING *';
+  const q = 'UPDATE users SET admin = $1 WHERE id = $2 RETURNING *';
   const result = await query(q, [bool, id]);
   await updateUserUpdatedTimeStamp(id);
   if (result.rowCount === 1) {
