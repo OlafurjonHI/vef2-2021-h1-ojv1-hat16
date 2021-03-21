@@ -284,7 +284,7 @@ export async function updateSeries(column, value, id) {
 
 export async function deleteFromTable(table, column, id) {
   const q = `DELETE FROM ${table} WHERE ${column} = $1;`;
-  const result = query(q, [parseInt(id, 10)]);
+  const result = query(q, [id]);
 
   return result;
 }
