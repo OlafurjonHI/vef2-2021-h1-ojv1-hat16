@@ -5,6 +5,7 @@ import {
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
   insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, deleteSeasonByIdAndNumber,
   createSeasons,
+  insertEpisode,
 } from './tv.js';
 
 import { seasonsValidationMiddleware, catchErrors, validationCheck } from './validation.js';
@@ -17,7 +18,7 @@ export const router = express.Router();
 /**
  * Displays a page with TV shows and basic data.
  */
-router.get('/', requireAuthentication, isAdmin, async (req, res) => {
+router.get('/', async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
   const [items, total] = await getSeries(offset, limit);
   const { host } = req.headers;
@@ -115,6 +116,7 @@ router.post('/:id/season/',
 
 /**
  * TODO: Villumeðhöndlun ef seria eða season er ekki til
+ *       Græja paging með t.d. makeJson hjálparfallinu
  *
  * Skilar stöku season fyrir þátt með grunnupplýsingum, fylki af þáttum
  */
@@ -138,12 +140,23 @@ router.delete('/:id/season/:seasonId?',
     const { id, seasonId } = req.params;
     const result = await deleteSeasonByIdAndNumber(id, seasonId);
     res.json(result);
-});
+  });
 
 /**
- * TODO
+ * Býr til nýjan þátt í season, aðeins ef notandi er stjórnandi
+ *
  */
-router.post('/tv/:id/season/:id/episode/');
+router.post('/:id/season/:seasonId/episode/',
+  requireAuthentication,
+  isAdmin,
+  async (req, res) => {
+    const { id, seasonId } = req.params;
+    req.body.serie_id = id;
+    req.body.season = seasonId;
+    // console.log(req.body);
+    const result = await insertEpisode(req.body, id, seasonId);
+    res.json(result.rows[0]);
+});
 
 /**
  * TODO
