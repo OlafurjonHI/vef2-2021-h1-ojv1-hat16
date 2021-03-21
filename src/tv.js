@@ -422,3 +422,11 @@ export async function createSerieStateForUser(state, uid, sid) {
   const result = await query(q, [sid, uid, state]);
   return result.rows[0];
 }
+export async function updateStateAndRatingForSerieAndUser(
+  serieId, userId, rating, state, newState = true,
+) {
+  const q = `UPDATE users_series SET rating = $1, status = $2 WHERE series_id = $3 AND user_id = $4
+  ${newState ? 'RETURNING series_id, user_id, status' : 'RETURNING series_id, user_id, rating'};`;
+  const result = await query(q, [rating, state, serieId, userId]);
+  return result.rows[0];
+}
