@@ -3,8 +3,8 @@ import express, { response } from 'express';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
-  insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons, 
-  getEpisodeBySeasonIdBySerieId,
+  insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons,
+  getEpisodeBySeasonIdBySerieId, deleteSeasonByIdAndNumber, deleteEpisodeBySeasonAndSerie,
 } from './tv.js';
 
 import { seasonsValidationMiddleware, catchErrors, validationCheck } from './validation.js';
@@ -17,7 +17,7 @@ export const router = express.Router();
 /**
  * Displays a page with TV shows and basic data.
  */
-router.get('/', requireAuthentication, isAdmin, async (req, res) => {
+router.get('/', async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
   const [items, total] = await getSeries(offset, limit);
   const { host } = req.headers;
@@ -104,7 +104,7 @@ router.get('/:id/season/', async (req, res) => {
  * TODO
  */
 // serieId, name, airDate, poster, overview, serie, number,
-router.post('/:id/season/',
+router.post('/:id/season/', requireAuthentication, isAdmin,
   seasonsValidationMiddleware,
   catchErrors(validationCheck),
   async (req, res) => {
@@ -158,4 +158,8 @@ router.get('/:sid/season/:seid/episode/:eid', async (req, res) => {
 /**
  * TODO
  */
-router.delete('/tv/:id/season/:id/episode/:id');
+router.delete('/:sid/season/:seid/episode/:eid', async (req, res) => {
+  const deleted = await (deleteEpisodeBySeasonAndSerie(req.params));
+  if (deleted === 0) res.status(401).json({ error: 'episode not found' });
+  res.json({});
+});
