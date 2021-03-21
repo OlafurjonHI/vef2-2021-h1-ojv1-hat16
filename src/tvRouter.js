@@ -158,7 +158,7 @@ router.get('/:sid/season/:seid/episode/:eid', async (req, res) => {
 /**
  * TODO
  */
-router.delete('/:sid/season/:seid/episode/:eid',requireAuthentication, isAdmin, async (req, res) => {
+router.delete('/:sid/season/:seid/episode/:eid', requireAuthentication, isAdmin, async (req, res) => {
   const deleted = await (deleteEpisodeBySeasonAndSerie(req.params));
   if (deleted === 0) res.status(401).json({ error: 'episode not found' });
   res.json({});
