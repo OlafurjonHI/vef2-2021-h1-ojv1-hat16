@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { uploadImg } from './cloudinary.js';
 import { query } from './db.js';
 
@@ -269,6 +270,21 @@ export async function insertSeries(series) {
       imgUrl, language, network, url],
   );
 
+  return result;
+}
+
+export async function insertEpisode(episode) {
+  const {
+    serie_id, name, air_date, season, overview, serie, number,
+  } = episode;
+
+  const q = `
+    INSERT INTO episode
+      (serie_id, name, air_date, season, overview, serie, number)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING *;`;
+
+  const result = await query(q, [serie_id, name, air_date, season, overview, serie, number]);
   return result;
 }
 

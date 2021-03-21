@@ -5,6 +5,7 @@ import {
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
   insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons,
   getEpisodeBySeasonIdBySerieId, deleteSeasonByIdAndNumber, deleteEpisodeBySeasonAndSerie,
+  insertEpisode,
 } from './tv.js';
 
 import { seasonsValidationMiddleware, catchErrors, validationCheck } from './validation.js';
@@ -115,6 +116,7 @@ router.post('/:id/season/', requireAuthentication, isAdmin,
 
 /**
  * TODO: Villumeðhöndlun ef seria eða season er ekki til
+ *       Græja paging með t.d. makeJson hjálparfallinu
  *
  * Skilar stöku season fyrir þátt með grunnupplýsingum, fylki af þáttum
  */
@@ -142,9 +144,20 @@ router.delete('/:id/season/:seasonId?',
   });
 
 /**
- * TODO
+ * Býr til nýjan þátt í season, aðeins ef notandi er stjórnandi
+ *
  */
-router.post('/tv/:id/season/:id/episode/');
+router.post('/:id/season/:seasonId/episode/',
+  requireAuthentication,
+  isAdmin,
+  async (req, res) => {
+    const { id, seasonId } = req.params;
+    req.body.serie_id = id;
+    req.body.season = seasonId;
+    // console.log(req.body);
+    const result = await insertEpisode(req.body, id, seasonId);
+    res.json(result.rows[0]);
+});
 
 /**
  * TODO
