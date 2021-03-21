@@ -385,6 +385,7 @@ export async function deleteFromTable(table, column, id) {
 export async function deleteSeasonByIdAndNumber(seriesId, seasonNumber) {
   const q = 'DELETE FROM seasons WHERE serie_id = $1 AND number = $2;';
   const result = await query(q, [seriesId, seasonNumber]);
+  return result.rowCount;
 }
 
 export async function deleteEpisodeBySeasonAndSerie(data) {
@@ -393,3 +394,25 @@ export async function deleteEpisodeBySeasonAndSerie(data) {
   const result = await query(q, [parseInt(sid, 10), parseInt(seid, 10), parseInt(eid, 10)]);
   return result.rowCount;
 }
+
+export async function createSerieRatingForUser(rating, uid, sid) {
+  const q = `
+    INSERT INTO users_series
+      (series_id, user_id, rating)
+    VALUES ($1, $2, $3)
+    RETURNING series_id, user_id, rating;`;
+
+  const result = await query(q, [sid, uid, rating]);
+  return result.rows[0];
+}
+export async function createSerieStateForUser(state, uid, sid) {
+  const q = `
+    INSERT INTO users_series
+      (series_id, user_id, status)
+    VALUES ($1, $2, $3)
+    RETURNING series_id, user_id, status;`;
+
+  const result = await query(q, [sid, uid, state]);
+  return result.rows[0];
+}
+

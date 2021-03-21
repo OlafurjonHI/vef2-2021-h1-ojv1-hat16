@@ -1,14 +1,20 @@
 /* eslint-disable camelcase */
-import express, { response } from 'express';
+import express from 'express';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
   insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons,
   getEpisodeBySeasonIdBySerieId, deleteSeasonByIdAndNumber, deleteEpisodeBySeasonAndSerie,
-  insertEpisode, getAvarageSerieRating,
+  insertEpisode,
+  getSerieRatingByUserId,
+  createSerieRatingForUser,
+  getSerieStatusByUserId,
+  createSerieStateForUser,
 } from './tv.js';
 
-import { seasonsValidationMiddleware, catchErrors, validationCheck } from './validation.js';
+import {
+  seasonsValidationMiddleware, catchErrors, validationCheck, rateValidationMiddleware, stateValidationMiddleware,
+} from './validation.js';
 import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
 import { generateJson } from './helpers.js';
 import { findByUsername } from './users.js';
@@ -70,8 +76,6 @@ router.get('/:id?', async (req, res) => {
     console.error(e);
   }
   const jsonObject = await getSeriesById(id, userId);
-  
-
 
   res.json(jsonObject);
 });
@@ -173,18 +177,12 @@ router.post('/:id/season/:seasonId/episode/',
     res.json(result.rows[0]);
   });
 
-/**
- * TODO
- */
 router.get('/:sid/season/:seid/episode/:eid', async (req, res) => {
   const episode = await getEpisodeBySeasonIdBySerieId(req.params);
   if (!episode) res.status(404).json({ error: 'episode not found' });
   res.json(episode);
 });
 
-/**
- * TODO
- */
 router.delete('/:sid/season/:seid/episode/:eid',
   requireAuthentication,
   isAdmin,
@@ -193,3 +191,30 @@ router.delete('/:sid/season/:seid/episode/:eid',
     if (deleted === 0) res.status(404).json({ error: 'episode not found' });
     res.json({});
   });
+
+router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchErrors(validationCheck), async (req, res) => {
+  const { id } = req.params;
+  const { rating } = req.body;
+  const authorization = req.headers.authorization.split(' ')[1];
+  const user = await findByUsername(getUserIdFromToken(authorization));
+  const ratingExists = await getSerieRatingByUserId(id, user.id);
+  console.log(ratingExists)
+  if (ratingExists) res.json({ errors: { value: `${rating}`, param: 'rating', message: 'value already exists, use PATCH to update' } });
+  else {
+    const row = await createSerieRatingForUser(rating, user.id, id);
+    res.json(row);
+  }
+});
+
+router.post('/:id/state', requireAuthentication, stateValidationMiddleware, catchErrors(validationCheck), async (req, res) => {
+  const { id } = req.params;
+  const { state } = req.body;
+  const authorization = req.headers.authorization.split(' ')[1];
+  const user = await findByUsername(getUserIdFromToken(authorization));
+  const stateExists = await getSerieStatusByUserId(id, user.id);
+  if (stateExists) res.json({ errors: { value: `${state}`, param: 'state', message: 'value already exists, use PATCH to update' } });
+  else {
+    const row = await createSerieStateForUser(state, user.id, id);
+    res.json(row);
+  }
+});

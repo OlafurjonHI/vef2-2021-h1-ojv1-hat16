@@ -38,6 +38,20 @@ export const seasonsValidationMiddleware = [
     .withMessage('serie is required, max 256 characters'),
 
 ];
+
+export const rateValidationMiddleware = [
+  body('rating')
+    .isInt({ min: 0, max: 5 })
+    .withMessage('rating must be an integer, one of 0, 1, 2, 3, 4, 5'),
+
+];
+export const stateValidationMiddleware = [
+  body('state')
+    .notEmpty()
+    .isIn(['want to watch', 'watching', 'watched'])
+    .withMessage('state must be one of \"want to watch\", \"watching\", \"watched\"'),
+
+];
 export function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
 }
