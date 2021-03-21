@@ -93,6 +93,29 @@ export async function getUsersTotal() {
   }
   return null;
 }
+export async function updateUser(email, password, id) {
+  let max = 0;
+  let i = 0;
+  let result = null;
+  if (email) {
+    max += 1;
+    const q = 'UPDATE users SET email = $1 WHERE id = $2 RETURNING *';
+    result = await query(q, [email, parseInt(id, 10)]);
+    i += result.rowCount;
+  }
+  if (password) {
+    const hashedPassword = await bcrypt.hash(password, 11);
+    const q2 = 'UPDATE users SET password = $1 WHERE id = $2 RETURNING *';
+    result = await query(q2, [hashedPassword, parseInt(id, 10)]);
+    i += result.rowCount;
+    max = +1;
+  }
+  if (i !== max) {
+    console.error('Failed to update User');
+  }
+  console.log(result)
+  return result.rows[0];
+}
 
 export async function getAllUsers(offset = 0, limit = 10) {
   const q = `

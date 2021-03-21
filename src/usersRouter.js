@@ -5,7 +5,7 @@ import passport, {
 } from './login.js';
 
 import {
-  createUser, findById, findByUsername, getAllUsers, updateUserAdmin,
+  createUser, findById, findByUsername, getAllUsers, updateUserAdmin, updateUser,
 } from './users.js';
 import { generateJson, getFilteredUser } from './helpers.js';
 import {
@@ -53,12 +53,17 @@ router.get('/me', requireAuthentication, async (req, res) => {
 });
 
 router.patch('/me', requireAuthentication, async (req, res) => {
-    const authorization = req.headers.authorization.split(' ')[1];
-    const userID = (getUserIdFromToken(authorization));
-    const user = await findByUsername(userID);
-    const filteredUser = getFilteredUser(user);
-    res.json(filteredUser);
-  });
+  const { email, password } = req.body;
+  if (!email && !password) res.json({ error: 'please provide atleast email or password' });
+  const authorization = req.headers.authorization.split(' ')[1];
+  const userID = (getUserIdFromToken(authorization));
+  console.log(userID)
+  const user = await findByUsername(userID);
+
+  const changed = await updateUser(email, password, user.id);
+  const filteredUser = getFilteredUser(changed);
+  res.json(filteredUser);
+});
 
 router.get('/:id?', requireAuthentication, isAdmin, async (req, res) => {
   const { id } = req.params;
