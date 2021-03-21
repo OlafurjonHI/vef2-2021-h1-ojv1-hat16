@@ -114,7 +114,7 @@ export async function getGenres(offset = 0, limit = 10) {
   const total = await getSeriesTotal();
   const result = await query(q, [offset, limit]);
   const items = result.rows;
-  return [items,total];
+  return [items, total];
 }
 
 // name,number,airDate,overview,season,serie,serieId
@@ -145,14 +145,20 @@ export async function createEpisodes(episode) {
 }
 
 // name,number,airDate,overview,poster,serie,serieId
-export async function createSeasons(series) {
+export async function createSeasons(series, id = null) {
   const {
-    serieId, name, airDate, poster, overview, serie, number,
+    serieId = id, name, airDate, poster, overview, serie, number,
   } = series;
   let parsedDate = null;
-  if (airDate.length > 0) {
+  if (airDate && airDate.length > 0) {
     const d = Date.parse(airDate);
     parsedDate = new Date(d);
+  }
+  let imgUrl = 'FAKEPATH';
+  if (!poster == null) {
+    imgUrl = await uploadImg(`./data/img/${poster}`);
+  } else {
+    imgUrl = 'FAKEPATH';
   }
   const q = `
     INSERT INTO
@@ -161,7 +167,6 @@ export async function createSeasons(series) {
     RETURNING *
   `;
   try {
-    const imgUrl = await uploadImg(`./data/img/${poster}`);
     const result = await query(
       q, [serieId, name, overview, parsedDate, imgUrl, number, serie],
     );
@@ -256,7 +261,6 @@ export async function insertSeries(series) {
     q, [name, tagline, description, airDate, inProduction,
       imgUrl, language, network, url],
   );
-
 
   return result;
 }

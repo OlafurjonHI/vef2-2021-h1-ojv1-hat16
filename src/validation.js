@@ -25,6 +25,23 @@ export const loginValidationMiddleware = [
     .withMessage('password is required, min 10 characters, max 256 characters'),
 ];
 
+export const seasonsValidationMiddleware = [
+  body('name')
+    .isLength({ min: 1, max: 256 })
+    .withMessage('name is required, max 256 characters'),
+  body('number')
+    .notEmpty()
+    .isInt({ min: 1 })
+    .withMessage('number is required, minimum value is 1'),
+  body('serie')
+    .isLength({ min: 1, max: 256 })
+    .withMessage('serie is required, max 256 characters'),
+
+
+];
+export function catchErrors(fn) {
+  return (req, res, next) => fn(req, res, next).catch(next);
+}
 export const userAdminValidationMiddleware = [
   body('admin')
     .isLength({ min: 1 })

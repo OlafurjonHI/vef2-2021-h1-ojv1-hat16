@@ -10,17 +10,13 @@ import {
 import { generateJson, getFilteredUser } from './helpers.js';
 import {
   validationMiddleware, xssSanitizationMiddleware, validationCheck,
-  sanitizationMiddleware, loginValidationMiddleware,
+  sanitizationMiddleware, loginValidationMiddleware, catchErrors,userAdminValidationMiddleware,
 } from './validation.js';
 
 // The root of this router is /users as defined in app.js
 export const router = express.Router();
 passport.use(new Strategy(jwtOptions, strat));
 router.use(passport.initialize());
-
-function catchErrors(fn) {
-  return (req, res, next) => fn(req, res, next).catch(next);
-}
 
 router.get('/', requireAuthentication, isAdmin, async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
@@ -70,7 +66,7 @@ router.get('/:id?', requireAuthentication, isAdmin, async (req, res) => {
   res.json(filteredUser);
 });
 
-router.patch('/:id?', requireAuthentication, isAdmin, async (req, res) => {
+router.patch('/:id?', requireAuthentication, isAdmin, userAdminValidationMiddleware, catchErrors(validationCheck), async (req, res) => {
   const { id } = req.params;
   const { admin } = req.body;
   if (!admin) {
