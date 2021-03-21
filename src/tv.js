@@ -148,7 +148,7 @@ export async function getSeasonsBySerieIdAndSeason(serieId, seasonNumber, offset
   const q = 'SELECT id, name, number, air_date, overview, poster FROM seasons WHERE serie_id = $1 AND number = $2 OFFSET $3 LIMIT $4;';
   const result = await query(q, [serieId, seasonNumber, offset, limit]);
 
-  return result.rows;
+  return result.rows[0];
 }
 
 export async function getEpisodesBySerieIdAndSeason(serieId, seasonNumber, offset = 0, limit = 10) {

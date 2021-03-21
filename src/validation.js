@@ -88,6 +88,7 @@ export async function isSeriesValid(req, res, next) {
   if (await checkIfSeriesExistsById(id)) {
     next();
   } else {
+    res.status(404);
     res.json(JSON.parse('{"errors":[{ "msg": "not found", "param": "id", "location": "params"}]}'));
   }
 }
@@ -97,6 +98,7 @@ export async function isSeasonValid(req, res, next) {
   if (await checkIfSeasonExistsBySerieIdAndSeasonNumber(id, seid)) {
     next();
   } else {
+    res.status(404);
     res.json(JSON.parse('{"errors":[{ "msg": "not found", "param": "id", "location": "params"}]}'));
   }
 }

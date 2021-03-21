@@ -128,6 +128,7 @@ router.post('/:id/season/',
 
 /**
  * Skilar stöku season fyrir þátt með grunnupplýsingum, fylki af þáttum
+ * Niðurstaðan er viljandi öðruvísi en sýnidæmi til að bæta við paging virkni
  */
 router.get('/:id/season/:seid?',
   isSeriesValid,
@@ -137,12 +138,9 @@ router.get('/:id/season/:seid?',
     const { limit = 10, offset = 0 } = req.query;
     const { host } = req.headers;
     const { baseUrl } = req;
-
-    const season = await getSeasonsBySerieIdAndSeason(id, seid, offset, limit);
-    if (!season) return res.status(404).json({ error: 'Series not found' });
-    const episodes = await getEpisodesBySerieIdAndSeason(id, seid, offset, limit);
-    if (!episodes) return res.status(404).json({ error: 'Season not found' });
     const total = await getEpisodeTotalBySerieIdAndSeason(id, seid);
+    const season = await getSeasonsBySerieIdAndSeason(id, seid, offset, limit);
+    const episodes = await getEpisodesBySerieIdAndSeason(id, seid, offset, limit);
     season.episodes = episodes;
 
     return res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), season, total, `${host}${baseUrl}`));
