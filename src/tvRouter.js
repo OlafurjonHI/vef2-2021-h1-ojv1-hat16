@@ -5,7 +5,7 @@ import cloudinary from 'cloudinary';
 import util from 'util';
 
 import {
-  storage, uploadImg, uploadStream, upload,
+  uploadImg, uploadStream, upload,
 } from './cloudinary.js';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
@@ -28,15 +28,22 @@ const { promisify } = util;
 
 export const router = express.Router();
 // const storage = multer.memoryStorage();
+const storage = multer.diskStorage({
+
+  filename(req, file, cb) {
+    cb(null, 'temp.png');
+  },
+});
+
 const multerUploads = multer({ storage });
 // Rótin á þessum router er '/tv' eins og skilgreint er í app.js
-function uploadImage(req, res, next) {
-  console.log(req.file);
-  res.json(req.file)
-}
 
 router.post('/test',
-  multerUploads.single('image'), uploadImage);
+  multerUploads.single('image'),
+  async (req, res) => {
+    console.log(req.file);
+    uploadImg(req.file.path).then((d) => res.json(d)).catch((e) => res.json('error'));
+  });
 
 /**
  * Skilar síðum af sjónvarpsþáttum með grunnupplýsingum
