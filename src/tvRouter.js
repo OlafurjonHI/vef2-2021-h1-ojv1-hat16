@@ -2,8 +2,11 @@
 import express from 'express';
 import multer from 'multer';
 import cloudinary from 'cloudinary';
+import util from 'util';
 
-import { uploadImg, uploadStream, upload } from './cloudinary.js';
+import {
+  storage, uploadImg, uploadStream, upload,
+} from './cloudinary.js';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
@@ -21,21 +24,20 @@ import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
 import { generateJson } from './helpers.js';
 import { findByUsername } from './users.js';
 
-// const storage = multer.memoryStorage();
+const { promisify } = util;
+
 export const router = express.Router();
-const storage = multer.memoryStorage();
+// const storage = multer.memoryStorage();
 const multerUploads = multer({ storage });
 // Rótin á þessum router er '/tv' eins og skilgreint er í app.js
+function uploadImage(req, res, next) {
+  console.log(req.file);
+  res.json(req.file)
+}
 
 router.post('/test',
-  multerUploads.single('image'),
-  async (req, res) => {
-    const encoded = req.file.buffer.toString('base64');
-    cloudinary.v2.uploader.upload(encoded, (resp, rej) => {
-      console.log(resp, res);
-      res.json(resp);
-    });
-  });
+  multerUploads.single('image'), uploadImage);
+
 /**
  * Skilar síðum af sjónvarpsþáttum með grunnupplýsingum
  */

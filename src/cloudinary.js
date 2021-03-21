@@ -36,7 +36,9 @@ export async function uploadStream(buffer) {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload_stream(buffer, (error, result) => {
       if (error) return reject(error);
-      return resolve(result);
+      return resolve(() => {
+        console.log('done');
+      });
     });
   });
 }
@@ -55,12 +57,14 @@ export const streamUpload = (req) => new Promise((resolve, reject) => {
 });
 
 export const upload = async (req) => {
-    console.log(req.files);
+  console.log(req.files);
 };
 export const storage = new CloudinaryStorage({
   cloudinary,
-  params:{
-    folder: (req,file) =>'folder_name',
+  params: {
+    folder: 'some-folder-name',
+    format: async (req, file) => 'png', // supports promises as well
+    public_id: (req, file) => 'computed-filename-using-request',
   },
 });
 
