@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
-import express from 'express';
+import express, { response } from 'express';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
-  insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, deleteSeasonByIdAndNumber,
-  createSeasons,
+  insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons,
+  getEpisodeBySeasonIdBySerieId, deleteSeasonByIdAndNumber, deleteEpisodeBySeasonAndSerie,
   insertEpisode,
 } from './tv.js';
 
@@ -105,7 +105,7 @@ router.get('/:id/season/', async (req, res) => {
  * TODO
  */
 // serieId, name, airDate, poster, overview, serie, number,
-router.post('/:id/season/',
+router.post('/:id/season/', requireAuthentication, isAdmin,
   seasonsValidationMiddleware,
   catchErrors(validationCheck),
   async (req, res) => {
@@ -126,6 +126,7 @@ router.get('/:id/season/:seasonId?', async (req, res) => {
   const season = result.rows[0];
   result = await getEpisodesBySerieIdAndSeason(id, seasonId);
   const episodes = result.rows;
+  if (!episodes) res.status(404).json({ error: 'season not found' });
   season.episodes = episodes;
   res.json(season);
 });
@@ -161,9 +162,17 @@ router.post('/:id/season/:seasonId/episode/',
 /**
  * TODO
  */
-router.get('/tv/:id/season/:id/episode/:id');
+router.get('/:sid/season/:seid/episode/:eid', async (req, res) => {
+  const episode = await getEpisodeBySeasonIdBySerieId(req.params);
+  if (!episode) res.status(404).json({ error: 'episode not found' });
+  res.json(episode);
+});
 
 /**
  * TODO
  */
-router.delete('/tv/:id/season/:id/episode/:id');
+router.delete('/:sid/season/:seid/episode/:eid', async (req, res) => {
+  const deleted = await (deleteEpisodeBySeasonAndSerie(req.params));
+  if (deleted === 0) res.status(401).json({ error: 'episode not found' });
+  res.json({});
+});

@@ -110,6 +110,13 @@ export async function getEpisodesBySerieIdAndSeason(serieId, seasonNumber, offse
   return result;
 }
 
+export async function getEpisodeBySeasonIdBySerieId(data) {
+  const { sid, seid, eid } = data;
+  const q = 'SELECT name,number,air_date, overview,serie_id,season,serie from episode WHERE serie_id = $1 AND season = $2 AND number = $3;';
+  const result = await query(q, [sid, seid, eid]);
+  return result.rows[0];
+}
+
 export async function getGenres(offset = 0, limit = 10) {
   const q = 'SELECT name FROM genres OFFSET $1 LIMIT $2;';
   const total = await getSeriesTotal();
@@ -330,4 +337,13 @@ export async function deleteFromTable(table, column, id) {
 export async function deleteSeasonByIdAndNumber(seriesId, seasonNumber) {
   const q = 'DELETE FROM seasons WHERE serie_id = $1 AND number = $2;';
   const result = await query(q, [seriesId, seasonNumber]);
+}
+
+export async function deleteEpisodeBySeasonAndSerie(data) {
+  console.log(data)
+  const { sid, seid, eid } = data;
+  const q = 'DELETE FROM episode WHERE serie_id = $1 AND season = $2 AND number = $3;';
+  const result = await query(q, [parseInt(sid, 10), parseInt(seid, 10), parseInt(eid, 10)]);
+  console.log(result);
+  return result.rowCount;
 }
