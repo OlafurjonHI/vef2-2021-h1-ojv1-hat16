@@ -33,10 +33,19 @@ export async function query(q, values = []) {
 
   return result;
 }
+export async function updateUserUpdatedTimeStamp(id) {
+  const q = 'UPDATE users SET updated = $1 WHERE id = $2';
+  const result = await query(q, [new Date(), id]);
+  if (result.rowCount === 1) {
+    return result.rows[0];
+  }
+  return false;
+}
 
 export async function updateUserAdmin(bool, id) {
-  const q = 'UPDATE users SET admin = $1 WHERE id = $2 RETURNING *';
+  const q = 'UPDATE users SET admin = $1 SET WHERE id = $2 RETURNING *';
   const result = await query(q, [bool, id]);
+  await updateUserUpdatedTimeStamp(id);
   if (result.rowCount === 1) {
     return result.rows[0];
   }
@@ -113,6 +122,7 @@ export async function updateUser(email, password, id) {
   if (i !== max) {
     console.error('Failed to update User');
   }
+  await updateUserUpdatedTimeStamp(id);
   return result.rows[0];
 }
 
