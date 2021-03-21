@@ -46,11 +46,14 @@ router.get('/', async (req, res) => {
     isImageValid,
  */
 router.post('/',
-  multerUploads.single('image'), (req, res, next) => {
-
-    res.json(upload(req));
-  }, async(req,res)=> {
-        console.log(req.files);
+  requireAuthentication,
+  isAdmin,
+  seriesValidationMiddleware,
+  catchErrors(validationCheck),
+  superSanitizationMiddleware,
+  async (req, res) => {
+    const result = await insertSeries(req.body);
+    res.json(result.rows);
   });
 
 /**
@@ -132,6 +135,7 @@ router.post('/:id/season/',
   isAdmin,
   seasonsValidationMiddleware,
   catchErrors(validationCheck),
+  superSanitizationMiddleware,
   async (req, res) => {
     const { id } = req.params;
     const season = await createSeasons(req.body, id);
@@ -181,6 +185,7 @@ router.post('/:id/season/:seid/episode/',
   isSeasonValid,
   requireAuthentication,
   isAdmin,
+  superSanitizationMiddleware,
   async (req, res) => {
     const { id, seid } = req.params;
     req.body.serie_id = id;
@@ -217,7 +222,7 @@ router.delete('/:id/season/:seid/episode/:eid',
 /**
  * Skráir einkunn innskráðs notanda á sjónvarpsþætti, aðeins fyrir innskráða notendur
  */
-router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchErrors(validationCheck), async (req, res) => {
+router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchErrors(validationCheck), superSanitizationMiddleware, async (req, res) => {
   const { id } = req.params;
   const { rating } = req.body;
   const authorization = req.headers.authorization.split(' ')[1];
@@ -232,6 +237,7 @@ router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchE
     res.json(row);
   } else {
     const row = await createSerieRatingForUser(rating, user.id, id);
+    await updateUserUpdatedTimeStamp(user.id);
     res.json(row);
   }
 });
@@ -239,7 +245,7 @@ router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchE
 /**
  * Skráir stöðu innskráðs notanda á sjónvarpsþætti, aðeins fyrir innskráða notendur
  */
-router.post('/:id/state', requireAuthentication, stateValidationMiddleware, catchErrors(validationCheck), async (req, res) => {
+router.post('/:id/state', requireAuthentication, stateValidationMiddleware, catchErrors(validationCheck), superSanitizationMiddleware,async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
   const authorization = req.headers.authorization.split(' ')[1];
@@ -253,6 +259,7 @@ router.post('/:id/state', requireAuthentication, stateValidationMiddleware, catc
     res.json(row);
   } else {
     const row = await createSerieStateForUser(state, user.id, id);
+    await updateUserUpdatedTimeStamp(user.id);
     res.json(row);
   }
 });
@@ -267,6 +274,7 @@ router.patch('/:id/state', requireAuthentication, stateValidationMiddleware, cat
   const user = await findByUsername(getUserIdFromToken(authorization));
   const ratingExists = await getSerieRatingByUserId(id, user.id);
   const row = await updateStateAndRatingForSerieAndUser(id, user.id, ratingExists.rating, state);
+  await updateUserUpdatedTimeStamp(user.id);
   res.json(row);
 });
 
@@ -281,6 +289,7 @@ router.patch('/:id/rate', requireAuthentication, rateValidationMiddleware, catch
   const stateExists = await getSerieStatusByUserId(id, user.id);
   const row = await updateStateAndRatingForSerieAndUser(id, user.id, rating,
     stateExists.status, false);
+  await updateUserUpdatedTimeStamp(user.id);
   res.json(row);
 });
 
@@ -292,7 +301,9 @@ router.delete('/:id/state', requireAuthentication, async (req, res) => {
   const authorization = req.headers.authorization.split(' ')[1];
   const user = await findByUsername(getUserIdFromToken(authorization));
   const ratingExists = await getSerieRatingByUserId(id, user.id);
-  const row = await updateStateAndRatingForSerieAndUser(id, user.id, ratingExists.rating, '');
+  const row = await updateStateAndRatingForSerieAndUser(id, user.id,
+    ratingExists.rating, undefined);
+  await updateUserUpdatedTimeStamp(user.id);
   res.json(row);
 });
 
@@ -306,5 +317,7 @@ router.delete('/:id/rate', requireAuthentication, async (req, res) => {
   const stateExists = await getSerieStatusByUserId(id, user.id);
   const row = await updateStateAndRatingForSerieAndUser(id, user.id, 0,
     stateExists.status, false);
+  await updateUserUpdatedTimeStamp(user.id);
+
   res.json(row);
 });

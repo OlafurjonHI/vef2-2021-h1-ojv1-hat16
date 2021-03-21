@@ -21,12 +21,12 @@ router.get('/', async (req, res) => {
 /**
    * TODO
    */
-router.post('/genres', requireAuthentication, isAdmin, async (req, res) => {
+router.post('/', requireAuthentication, isAdmin, async (req, res) => {
   const { name } = req.body;
   const { limit = 10, offset = 0 } = req.query;
   const { host } = req.headers;
   const { baseUrl } = req;
-  if (!name || name.length > 256) res.json({ error: 'name is required, max 256 characters' });
+  if (!name || name.length > 256) res.json({ error: { value: `${name}`, param:'name',message: 'name is required, max 256 characters' } });
   await addGenre(name);
   const [items, total] = await getGenres(offset, limit);
   res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), items, total, `${host}${baseUrl}`));

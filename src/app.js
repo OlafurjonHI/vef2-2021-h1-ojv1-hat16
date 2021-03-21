@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 
 import express from 'express';
 import dotenv from 'dotenv';
-import multer from 'multer';
+
 
 import { router as tvRouter } from './tvRouter.js';
 import { router as userRouter } from './usersRouter.js';
@@ -11,7 +11,7 @@ import { router as genresRouter } from './genres.js';
 
 dotenv.config();
 
-export const uploadImage = multer();
+
 
 const {
   PORT: port = 3000,

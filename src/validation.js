@@ -37,6 +37,41 @@ export const seasonsValidationMiddleware = [
   body('serie')
     .isLength({ min: 1, max: 256 })
     .withMessage('serie is required, max 256 characters'),
+  body('overview').isLength({ max: 256 })
+    .optional()
+    .withMessage('max 256 characters'),
+  body('inProduction')
+    .isBoolean()
+    .optional()
+    .withMessage('inProduction is either true or false'),
+  body('poster')
+    .notEmpty()
+    .withMessage('image is'),
+
+];
+
+export const seriesValidationMiddleware = [
+  body('name')
+    .notEmpty()
+    .isLength({ min: 1, max: 256 })
+    .withMessage('name is required, max 256 characters'),
+  body('image')
+    .notEmpty()
+    .withMessage('image is required'),
+  body('inProduction')
+    .isBoolean()
+    .optional()
+    .withMessage('inProduction is either true or false'),
+  body('url')
+    .isLength({ max: 256 })
+    .optional()
+    .withMessage('max 256 characters'),
+  body('tagline').isLength({ max: 256 })
+    .optional()
+    .withMessage('max 256 characters'),
+  body('description').isLength({ max: 256 })
+    .optional()
+    .withMessage('max 256 characters'),
 
 ];
 
@@ -67,6 +102,19 @@ export const userAdminValidationMiddleware = [
 export const xssSanitizationMiddleware = [
   body('username').customSanitizer((v) => xss(v)),
   body('email').customSanitizer((v) => xss(v)),
+];
+
+export const superSanitizationMiddleware = [
+  body('username').optional().customSanitizer((v) => xss(v)),
+  body('email').optional().customSanitizer((v) => xss(v)),
+  body('image').optional().customSanitizer((v) => xss(v)),
+  body('poster').optional().customSanitizer((v) => xss(v)),
+  body('admin').optional().customSanitizer((v) => xss(v)),
+  body('overview').optional().customSanitizer((v) => xss(v)),
+  body('description').optional().customSanitizer((v) => xss(v)),
+  body('network').optional().customSanitizer((v) => xss(v)),
+  body('url').optional().customSanitizer((v) => xss(v)),
+  body('tagline').optional().customSanitizer((v) => xss(v)),
 ];
 
 export const sanitizationMiddleware = [

@@ -55,9 +55,7 @@ export const streamUpload = (req) => new Promise((resolve, reject) => {
 });
 
 export const upload = async (req) => {
-  const res = await streamUpload(req);
-  console.log(res);
-  return res;
+    console.log(req.files);
 };
 export const storage = new CloudinaryStorage({
   cloudinary,

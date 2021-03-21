@@ -92,12 +92,10 @@ export async function getSeriesById(id, userId) {
   const q = 'SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series where id = $1';
   let result = await query(q, [id]);
   const serie = result.rows[0];
-  // TODO BÆTA INN RATING
   const q2 = 'SELECT genres_name AS name FROM series_genres where series_id = $1';
   result = await query(q2, [id]);
   const genres = result.rows;
-
-  const q3 = 'SELECT name,number,air_date,overview,poster FROM seasons where serie_id = $1';
+  const q3 = 'SELECT name,number,air_date,overview,poster FROM seasons where serie_id = $1 ORDER BY number ASC';
   result = await query(q3, [id]);
   const seasons = result.rows;
   const [avgRating, total] = await getAvarageSerieRating(id);

@@ -10,7 +10,8 @@ import {
 import { generateJson, getFilteredUser } from './helpers.js';
 import {
   validationMiddleware, xssSanitizationMiddleware, validationCheck,
-  sanitizationMiddleware, loginValidationMiddleware, catchErrors, userAdminValidationMiddleware,
+  superSanitizationMiddleware, loginValidationMiddleware, catchErrors, 
+  userAdminValidationMiddleware,
 } from './validation.js';
 
 // The root of this router is /users as defined in app.js
@@ -30,14 +31,14 @@ router.post('/login',
   loginValidationMiddleware,
   xssSanitizationMiddleware,
   catchErrors(validationCheck),
-  sanitizationMiddleware,
+  superSanitizationMiddleware,
   loginUser);
 
 router.post('/register',
   validationMiddleware,
   xssSanitizationMiddleware,
   catchErrors(validationCheck),
-  sanitizationMiddleware,
+  superSanitizationMiddleware,
   async (req, res) => {
     const user = await createUser(req);
     res.json(getFilteredUser(user));
