@@ -3,8 +3,10 @@ import express from 'express';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
-  insertSeries, updateSeries, getOnlySeriesById, deleteFromTable,
+  insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons,
 } from './tv.js';
+
+import { seasonsValidationMiddleware, catchErrors, validationCheck} from './validation.js';
 import { requireAuthentication, isAdmin } from './login.js';
 import { generateJson } from './helpers.js';
 
@@ -101,7 +103,15 @@ router.get('/:id/season/', async (req, res) => {
 /**
  * TODO
  */
-router.post('/:id/season/');
+// serieId, name, airDate, poster, overview, serie, number,
+router.post('/:id/season/',
+  seasonsValidationMiddleware,
+  catchErrors(validationCheck),
+  async (req, res) => {
+    const { id } = req.params;
+    const season = await createSeasons(req.body, id);
+    res.json(season);
+  });
 
 /**
  * TODO: Remove "serie_id" og serie í svari
@@ -140,4 +150,3 @@ router.get('/tv/:id/season/:id/episode/:id');
  * TODO
  */
 router.delete('/tv/:id/season/:id/episode/:id');
-
