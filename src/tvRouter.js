@@ -3,7 +3,7 @@ import express from 'express';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
-  insertSeries, updateSeries, getOnlySeriesById,
+  insertSeries, updateSeries, getOnlySeriesById, deleteFromTable,
 } from './tv.js';
 import { requireAuthentication, isAdmin } from './login.js';
 import { generateJson } from './helpers.js';
@@ -73,9 +73,17 @@ router.patch('/:id?', requireAuthentication, isAdmin, async (req, res) => {
 });
 
 /**
- * TODO
+ * eyðir sjónvarpsþátt, aðeins ef notandi er stjórnandi
+ * requireAuthentication, isAdmin,
  */
-router.delete('/:id?');
+router.delete('/:id?', async (req, res) => {
+  const { id } = req.params;
+  await deleteFromTable('series_genres', 'id', id);
+  await deleteFromTable('series', 'series_id', id);
+  const result = await getSeries();
+  return result;
+  // deleteFromTable('series', id);
+});
 
 /**
  * Displays seasons of a series with respective data
