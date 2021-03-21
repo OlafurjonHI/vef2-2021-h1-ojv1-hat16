@@ -102,3 +102,13 @@ export async function isSeasonValid(req, res, next) {
     res.json(JSON.parse('{"errors":[{ "msg": "not found", "param": "id", "location": "params"}]}'));
   }
 }
+
+export async function isImageValid(req, res, next) {
+  const { mimetype = '' } = req.file;
+  if (mimetype === 'image/png'
+    || mimetype === 'image/jpeg'
+    || mimetype === 'image/gif') {
+    next();
+  }
+  res.status(422).json(JSON.parse('{"errors":[{ "msg": "Invalid file type", "param": "image", "location": "params"}]}'));
+}
