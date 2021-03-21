@@ -34,6 +34,15 @@ export async function query(q, values = []) {
   return result;
 }
 
+export async function updateUserAdmin(bool, id) {
+  const q = 'UPDATE users SET admin = $1 WHERE id = $2 RETURNING *';
+  const result = await query(q, [bool, id]);
+  if (result.rowCount === 1) {
+    return result.rows[0];
+  }
+  return false;
+}
+
 export async function comparePasswords(password, hash) {
   const result = await bcrypt.compare(password, hash);
   return result;

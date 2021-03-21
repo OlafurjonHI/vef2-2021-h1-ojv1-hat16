@@ -1,4 +1,4 @@
-import { body, validationResult } from 'express-validator';
+import { body, validationResult, check } from 'express-validator';
 import xss from 'xss';
 
 export const validationMiddleware = [
@@ -25,6 +25,12 @@ export const loginValidationMiddleware = [
     .withMessage('password is required, min 10 characters, max 256 characters'),
 ];
 
+export const userAdminValidationMiddleware = [
+  body('admin')
+    .isLength({ min: 1 })
+    .isBoolean()
+    .withMessage('admin is required, either true or false'),
+];
 // Viljum keyra sér og með validation, ver gegn „self XSS“
 export const xssSanitizationMiddleware = [
   body('username').customSanitizer((v) => xss(v)),
