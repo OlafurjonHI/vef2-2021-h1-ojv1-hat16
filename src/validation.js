@@ -1,5 +1,6 @@
 import { body, validationResult } from 'express-validator';
 import xss from 'xss';
+import { checkIfSeasonExistsBySerieIdAndSeasonNumber, checkIfSeriesExistsById } from './tv.js';
 
 export const validationMiddleware = [
   body('username')
@@ -49,6 +50,7 @@ export const stateValidationMiddleware = [
   body('state')
     .notEmpty()
     .isIn(['want to watch', 'watching', 'watched'])
+    // eslint-disable-next-line no-useless-escape
     .withMessage('state must be one of \"want to watch\", \"watching\", \"watched\"'),
 
 ];
@@ -78,4 +80,23 @@ export async function validationCheck(req, res, next) {
   }
 
   return next();
+}
+
+export async function isSeriesValid(req, res, next) {
+  const { id } = req.params;
+  // console.log(id);
+  if (await checkIfSeriesExistsById(id)) {
+    next();
+  } else {
+    res.json(JSON.parse('{"errors":[{ "msg": "not found", "param": "id", "location": "params"}]}'));
+  }
+}
+
+export async function isSeasonValid(req, res, next) {
+  const { id, seid } = req.params;
+  if (await checkIfSeasonExistsBySerieIdAndSeasonNumber(id, seid)) {
+    next();
+  } else {
+    res.json(JSON.parse('{"errors":[{ "msg": "not found", "param": "id", "location": "params"}]}'));
+  }
 }

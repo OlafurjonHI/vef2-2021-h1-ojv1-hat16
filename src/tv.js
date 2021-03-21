@@ -159,9 +159,9 @@ export async function getEpisodesBySerieIdAndSeason(serieId, seasonNumber, offse
 }
 
 export async function getEpisodeBySeasonIdBySerieId(data) {
-  const { sid, seid, eid } = data;
+  const { id, seid, eid } = data;
   const q = 'SELECT name,number,air_date, overview,serie_id,season,serie from episode WHERE serie_id = $1 AND season = $2 AND number = $3;';
-  const result = await query(q, [sid, seid, eid]);
+  const result = await query(q, [id, seid, eid]);
   return result.rows[0];
 }
 
@@ -240,6 +240,24 @@ export async function createSeasons(series, id = null) {
   return null;
 }
 
+export async function checkIfSeriesExistsById(id) {
+  const q = `
+  SELECT id FROM series WHERE id = $1;
+  `;
+  const result = await query(q, [id]);
+
+  return (!!result.rows[0]);
+}
+
+export async function checkIfSeasonExistsBySerieIdAndSeasonNumber(id, seasonNumber) {
+  const q = `
+  SELECT id FROM seasons WHERE serie_id = $1 AND number = $2;
+  `;
+  const result = await query(q, [id, seasonNumber]);
+
+  return (!!result.rows[0]);
+}
+
 export async function checkIfGenreExists(genre) {
   const q = `
   SELECT name FROM genres WHERE name = $1
@@ -294,13 +312,14 @@ export async function addGenresSeriesConnection(id, genre) {
   return null;
 }
 
+/**
+ * TODO: Vinna með myndir
+ */
 export async function insertSeries(series) {
   const {
+    // eslint-disable-next-line no-unused-vars
     name, airDate, inProduction, tagline, image, description, language, network, url,
   } = series;
-
-  // Þurfum að finna út úr því hvernig við ætlum að höndla myndir
-  // TODO ákveða hvernig við höndlum myndir
 
   let imgUrl;
   try {
@@ -396,9 +415,9 @@ export async function deleteSeasonByIdAndNumber(seriesId, seasonNumber) {
 }
 
 export async function deleteEpisodeBySeasonAndSerie(data) {
-  const { sid, seid, eid } = data;
+  const { id, seid, eid } = data;
   const q = 'DELETE FROM episode WHERE serie_id = $1 AND season = $2 AND number = $3;';
-  const result = await query(q, [parseInt(sid, 10), parseInt(seid, 10), parseInt(eid, 10)]);
+  const result = await query(q, [parseInt(id, 10), parseInt(seid, 10), parseInt(eid, 10)]);
   return result.rowCount;
 }
 

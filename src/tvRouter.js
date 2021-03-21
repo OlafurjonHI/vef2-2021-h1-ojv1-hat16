@@ -1,32 +1,26 @@
 /* eslint-disable camelcase */
 import express from 'express';
-import e from 'express';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
   insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons,
   getEpisodeBySeasonIdBySerieId, deleteSeasonByIdAndNumber, deleteEpisodeBySeasonAndSerie,
-  insertEpisode,
-  getSerieRatingByUserId,
-  createSerieRatingForUser,
-  getSerieStatusByUserId,
-  createSerieStateForUser,
-  getEpisodeTotalBySerieIdAndSeason,
-  updateStateAndRatingForSerieAndUser,
+  insertEpisode, getSerieRatingByUserId, createSerieRatingForUser, getSerieStatusByUserId,
+  createSerieStateForUser, getEpisodeTotalBySerieIdAndSeason, updateStateAndRatingForSerieAndUser,
 } from './tv.js';
-
 import {
-  seasonsValidationMiddleware, catchErrors, validationCheck, rateValidationMiddleware, stateValidationMiddleware,
+  seasonsValidationMiddleware, catchErrors, validationCheck, rateValidationMiddleware,
+  stateValidationMiddleware, isSeriesValid, isSeasonValid,
 } from './validation.js';
 import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
 import { generateJson } from './helpers.js';
 import { findByUsername } from './users.js';
 
-// The root of this router is /tv as defined in app.js
+// Rótin á þessum router er '/tv' eins og skilgreint er í app.js
 export const router = express.Router();
 
 /**
- * Displays a page with TV shows and basic data.
+ * Skilar síðum af sjónvarpsþáttum með grunnupplýsingum
  */
 router.get('/', async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
@@ -37,94 +31,93 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * TODO: Ensure admin is logged in
- *       Nota custom fall í tv.js í stað kalls á query hér
- *       Græja upload á myndum
- *
- * Enables admin users to create new TV shows
+ * TODO: Græja upload á myndum
  */
-/**
-  {
-    "name": "Testname",
-    "air_date": "2021-03-20T19:35:44.477Z",
-    "in_production": true,
-    "tagline": "This is a testing tagline",
-    "image": "https://www.erkomideldgos.is/",
-    "description": "This is a very descriptive test",
-    "language": "en",
-    "network": "network test",
-    "url": "fake url for a test"
-  }
- */
-router.post('/', requireAuthentication, isAdmin, async (req, res) => {
-  const result = await insertSeries(req.body);
-  res.json(result.rows);
-
-  // res.send({ response: 'thanks mather, for my life' });
-});
+router.post('/',
+  requireAuthentication,
+  isAdmin,
+  async (req, res) => {
+    const result = await insertSeries(req.body);
+    res.json(result.rows);
+  });
 
 /**
  * TODO: Add avarage rating, rating count.
+ *       Kemur villa í console þegar user er ekki loggaður inn, split notað á undefined.
  *
  * Displays a TV series with respective data
  */
-router.get('/:id?', async (req, res) => {
-  const { id } = req.params;
-  let userId = null;
-  try {
-    const authorization = req.headers.authorization.split(' ')[1];
-    const user = await findByUsername(getUserIdFromToken(authorization));
-    userId = user.id;
-  } catch (e) {
-    console.error(e);
-  }
-  const jsonObject = await getSeriesById(id, userId);
+router.get('/:id?',
+  isSeriesValid,
+  async (req, res) => {
+    const { id } = req.params;
+    let userId = null;
+    try {
+      const authorization = req.headers.authorization.split(' ')[1];
+      const user = await findByUsername(getUserIdFromToken(authorization));
+      userId = user.id;
+    } catch (e) {
+      console.error(e);
+    }
+    const jsonObject = await getSeriesById(id, userId);
 
-  res.json(jsonObject);
-});
+    res.json(jsonObject);
+  });
 
 /**
  * Uppfærir sjónvarpsþátt, reit fyrir reit, aðeins ef notandi er stjórnandi
  */
-router.patch('/:id?', requireAuthentication, isAdmin, async (req, res) => {
-  const { id } = req.params;
-  Object.keys(req.body).forEach(async (key) => {
-    await updateSeries(key, req.body[key], id);
+router.patch('/:id?',
+  isSeriesValid,
+  requireAuthentication,
+  isAdmin,
+  async (req, res) => {
+    const { id } = req.params;
+    Object.keys(req.body).forEach(async (key) => {
+      await updateSeries(key, req.body[key], id);
+    });
+    const result = await getOnlySeriesById(id);
+    res.send(result);
   });
-  const result = await getOnlySeriesById(id);
-  res.send(result);
-});
 
 /**
  * TODO: Birta rétt JSON þegar ekki er neitt til að eyða.
  *
- * eyðir sjónvarpsþátt, aðeins ef notandi er stjórnandi
+ * Eyðir sjónvarpsþátt, aðeins ef notandi er stjórnandi
  */
-router.delete('/:id?', requireAuthentication, isAdmin, async (req, res) => {
-  const { id } = req.params;
-  await deleteFromTable('series_genres', 'series_id', id);
-  await deleteFromTable('series', 'id', id);
-  res.json({});
-});
+router.delete('/:id?',
+  isSeriesValid,
+  requireAuthentication,
+  isAdmin,
+  async (req, res) => {
+    const { id } = req.params;
+    await deleteFromTable('series_genres', 'series_id', id);
+    await deleteFromTable('series', 'id', id);
+    res.json({});
+  });
 
 /**
- * Displays seasons of a series with respective data
+ * Skilar fylki af öllum seasons fyrir sjónvarpsþátt
  */
-router.get('/:id/season/', async (req, res) => {
-  const { id } = req.params;
-  const { limit = 10, offset = 0 } = req.query;
-  const { host } = req.headers;
-  const { baseUrl } = req;
-  const seasons = await getSeasonsBySerieId(id, offset, limit);
-  const { total } = await getSeasonTotalBySerieId(id);
-  res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), seasons, total, `${host}${baseUrl}`));
-});
+router.get('/:id/season/',
+  isSeriesValid,
+  async (req, res) => {
+    const { id } = req.params;
+    const { limit = 10, offset = 0 } = req.query;
+    const { host } = req.headers;
+    const { baseUrl } = req;
+    const seasons = await getSeasonsBySerieId(id, offset, limit);
+    const { total } = await getSeasonTotalBySerieId(id);
+    res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), seasons, total, `${host}${baseUrl}`));
+  });
 
 /**
- * TODO
+ * Býr til nýtt í season í sjónvarpþætti, aðeins ef notandi er stjórnandi
  */
-// serieId, name, airDate, poster, overview, serie, number,
-router.post('/:id/season/', requireAuthentication, isAdmin,
+router.post('/:id/season/',
+  isSeriesValid,
+  requireAuthentication,
+  isAdmin,
   seasonsValidationMiddleware,
   catchErrors(validationCheck),
   async (req, res) => {
@@ -134,33 +127,32 @@ router.post('/:id/season/', requireAuthentication, isAdmin,
   });
 
 /**
- * TODO: Villumeðhöndlun ef seria eða season er ekki til
- *       Græja paging með t.d. makeJson hjálparfallinu
- *
  * Skilar stöku season fyrir þátt með grunnupplýsingum, fylki af þáttum
  */
-router.get('/:id/season/:seasonId?',
-  seasonsValidationMiddleware,
+router.get('/:id/season/:seid?',
+  isSeriesValid,
+  isSeasonValid,
   async (req, res) => {
-    const { id, seasonId } = req.params;
+    const { id, seid } = req.params;
     const { limit = 10, offset = 0 } = req.query;
     const { host } = req.headers;
     const { baseUrl } = req;
-    let result = await getSeasonsBySerieIdAndSeason(id, seasonId, offset, limit);
-    if (!result) return res.status(404).json({ error: 'Series not found' });
-    const season = result;
-    result = await getEpisodesBySerieIdAndSeason(id, seasonId, offset, limit);
-    const episodes = result;
-    if (!episodes) return res.status(404).json({ error: 'season not found' });
-    const total = await getEpisodeTotalBySerieIdAndSeason(id, seasonId);
+
+    const season = await getSeasonsBySerieIdAndSeason(id, seid, offset, limit);
+    if (!season) return res.status(404).json({ error: 'Series not found' });
+    const episodes = await getEpisodesBySerieIdAndSeason(id, seid, offset, limit);
+    if (!episodes) return res.status(404).json({ error: 'Season not found' });
+    const total = await getEpisodeTotalBySerieIdAndSeason(id, seid);
     season.episodes = episodes;
-    res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), season, total, `${host}${baseUrl}`));
+
+    return res.json(generateJson(parseInt(limit, 10), parseInt(offset, 10), season, total, `${host}${baseUrl}`));
   });
 
 /**
  * Eyðir season, aðeins ef notandi er stjórnandi
  */
 router.delete('/:id/season/:seasonId?',
+  isSeriesValid,
   requireAuthentication,
   isAdmin,
   async (req, res) => {
@@ -173,27 +165,37 @@ router.delete('/:id/season/:seasonId?',
 
 /**
  * Býr til nýjan þátt í season, aðeins ef notandi er stjórnandi
- *
  */
-router.post('/:id/season/:seasonId/episode/',
+router.post('/:id/season/:seid/episode/',
+  isSeriesValid,
+  isSeasonValid,
   requireAuthentication,
   isAdmin,
   async (req, res) => {
-    const { id, seasonId } = req.params;
+    const { id, seid } = req.params;
     req.body.serie_id = id;
-    req.body.season = seasonId;
+    req.body.season = seid;
     // console.log(req.body);
-    const result = await insertEpisode(req.body, id, seasonId);
+    const result = await insertEpisode(req.body, id, seid);
     res.json(result.rows[0]);
   });
 
-router.get('/:sid/season/:seid/episode/:eid', async (req, res) => {
-  const episode = await getEpisodeBySeasonIdBySerieId(req.params);
-  if (!episode) res.status(404).json({ error: 'episode not found' });
-  res.json(episode);
-});
+/**
+ * Skilar upplýsingum um þátt
+ */
+router.get('/:id/season/:seid/episode/:eid',
+  isSeriesValid,
+  isSeasonValid,
+  async (req, res) => {
+    const episode = await getEpisodeBySeasonIdBySerieId(req.params);
+    if (!episode) res.status(404).json({ error: 'episode not found' });
+    res.json(episode);
+  });
 
-router.delete('/:sid/season/:seid/episode/:eid',
+/**
+ * Eyðir þætti, aðeins ef notandi er stjórnandi
+ */
+router.delete('/:id/season/:seid/episode/:eid',
   requireAuthentication,
   isAdmin,
   async (req, res) => {
@@ -202,6 +204,9 @@ router.delete('/:sid/season/:seid/episode/:eid',
     res.json({});
   });
 
+/**
+ * Skráir einkunn innskráðs notanda á sjónvarpsþætti, aðeins fyrir innskráða notendur
+ */
 router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchErrors(validationCheck), async (req, res) => {
   const { id } = req.params;
   const { rating } = req.body;
@@ -221,6 +226,9 @@ router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchE
   }
 });
 
+/**
+ * Skráir stöðu innskráðs notanda á sjónvarpsþætti, aðeins fyrir innskráða notendur
+ */
 router.post('/:id/state', requireAuthentication, stateValidationMiddleware, catchErrors(validationCheck), async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
@@ -239,6 +247,9 @@ router.post('/:id/state', requireAuthentication, stateValidationMiddleware, catc
   }
 });
 
+/**
+ * Uppfærir stöðu innskráðs notanda á sjónvarpsþætti
+ */
 router.patch('/:id/state', requireAuthentication, stateValidationMiddleware, catchErrors(validationCheck), async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
@@ -249,6 +260,9 @@ router.patch('/:id/state', requireAuthentication, stateValidationMiddleware, cat
   res.json(row);
 });
 
+/**
+ * Uppfærir einkunn innskráðs notanda á sjónvarpsþætti
+ */
 router.patch('/:id/rate', requireAuthentication, rateValidationMiddleware, catchErrors(validationCheck), async (req, res) => {
   const { id } = req.params;
   const { rating } = req.body;
@@ -260,6 +274,9 @@ router.patch('/:id/rate', requireAuthentication, rateValidationMiddleware, catch
   res.json(row);
 });
 
+/**
+ * Eyðir stöðu innskráðs notanda á sjónvarpsþætti
+ */
 router.delete('/:id/state', requireAuthentication, async (req, res) => {
   const { id } = req.params;
   const authorization = req.headers.authorization.split(' ')[1];
@@ -269,6 +286,9 @@ router.delete('/:id/state', requireAuthentication, async (req, res) => {
   res.json(row);
 });
 
+/**
+ * Eyðir einkunn innskráðs notanda á sjónvarpsþætti
+ */
 router.delete('/:id/rate', requireAuthentication, async (req, res) => {
   const { id } = req.params;
   const authorization = req.headers.authorization.split(' ')[1];
