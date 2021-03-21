@@ -10,12 +10,12 @@ import {
 } from './tv.js';
 import {
   seasonsValidationMiddleware, catchErrors, validationCheck, rateValidationMiddleware,
-  stateValidationMiddleware, isSeriesValid, isSeasonValid,
+  stateValidationMiddleware, isSeriesValid, isSeasonValid, seriesValidationMiddleware,
+  superSanitizationMiddleware,
 } from './validation.js';
 import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
 import { generateJson } from './helpers.js';
 import { findByUsername, updateUserUpdatedTimeStamp } from './users.js';
-
 // Rótin á þessum router er '/tv' eins og skilgreint er í app.js
 export const router = express.Router();
 
@@ -36,6 +36,9 @@ router.get('/', async (req, res) => {
 router.post('/',
   requireAuthentication,
   isAdmin,
+  seriesValidationMiddleware,
+  catchErrors(validationCheck),
+  superSanitizationMiddleware,
   async (req, res) => {
     const result = await insertSeries(req.body);
     res.json(result.rows);
@@ -120,6 +123,7 @@ router.post('/:id/season/',
   isAdmin,
   seasonsValidationMiddleware,
   catchErrors(validationCheck),
+  superSanitizationMiddleware,
   async (req, res) => {
     const { id } = req.params;
     const season = await createSeasons(req.body, id);
@@ -169,6 +173,7 @@ router.post('/:id/season/:seid/episode/',
   isSeasonValid,
   requireAuthentication,
   isAdmin,
+  superSanitizationMiddleware,
   async (req, res) => {
     const { id, seid } = req.params;
     req.body.serie_id = id;
@@ -205,7 +210,7 @@ router.delete('/:id/season/:seid/episode/:eid',
 /**
  * Skráir einkunn innskráðs notanda á sjónvarpsþætti, aðeins fyrir innskráða notendur
  */
-router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchErrors(validationCheck), async (req, res) => {
+router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchErrors(validationCheck), superSanitizationMiddleware, async (req, res) => {
   const { id } = req.params;
   const { rating } = req.body;
   const authorization = req.headers.authorization.split(' ')[1];
@@ -228,7 +233,7 @@ router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchE
 /**
  * Skráir stöðu innskráðs notanda á sjónvarpsþætti, aðeins fyrir innskráða notendur
  */
-router.post('/:id/state', requireAuthentication, stateValidationMiddleware, catchErrors(validationCheck), async (req, res) => {
+router.post('/:id/state', requireAuthentication, stateValidationMiddleware, catchErrors(validationCheck), superSanitizationMiddleware,async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
   const authorization = req.headers.authorization.split(' ')[1];
@@ -272,7 +277,7 @@ router.patch('/:id/rate', requireAuthentication, rateValidationMiddleware, catch
   const stateExists = await getSerieStatusByUserId(id, user.id);
   const row = await updateStateAndRatingForSerieAndUser(id, user.id, rating,
     stateExists.status, false);
-  await updateUserUpdatedTimeStamp(user.id);  
+  await updateUserUpdatedTimeStamp(user.id);
   res.json(row);
 });
 
@@ -284,7 +289,8 @@ router.delete('/:id/state', requireAuthentication, async (req, res) => {
   const authorization = req.headers.authorization.split(' ')[1];
   const user = await findByUsername(getUserIdFromToken(authorization));
   const ratingExists = await getSerieRatingByUserId(id, user.id);
-  const row = await updateStateAndRatingForSerieAndUser(id, user.id, ratingExists.rating, undefined);
+  const row = await updateStateAndRatingForSerieAndUser(id, user.id,
+    ratingExists.rating, undefined);
   await updateUserUpdatedTimeStamp(user.id);
   res.json(row);
 });
