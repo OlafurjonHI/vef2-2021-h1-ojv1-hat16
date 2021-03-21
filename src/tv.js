@@ -15,6 +15,21 @@ export async function getSeriesTotal() {
   }
   return null;
 }
+
+export async function getGenresTotal() {
+  const q = `
+  SELECT count(*) as total FROM genres
+`;
+  try {
+    const result = await query(
+      q, [],
+    );
+    return result.rows[0];
+  } catch (e) {
+    console.error(e);
+  }
+  return null;
+}
 export async function getSeries(offset = 0, limit = 10) {
   const q = `
   SELECT id,name,air_date,in_production,tagline,image,description,language,network,url FROM series ORDER BY id asc OFFSET $1 LIMIT $2
@@ -87,11 +102,19 @@ export async function getSeasonsBySerieIdAndSeason(serieId, seasonNumber) {
   return result;
 }
 
-export async function getEpisodesBySerieIdAndSeason(serieId, seasonNumber, offset = 0, limit = 50) {
+export async function getEpisodesBySerieIdAndSeason(serieId, seasonNumber, offset = 0, limit = 10) {
   const q = 'SELECT * FROM episode WHERE serie_id = $1 AND season = $2 OFFSET $3 LIMIT $4;';
   const result = await query(q, [serieId, seasonNumber, offset, limit]);
 
   return result;
+}
+
+export async function getGenres(offset = 0, limit = 10) {
+  const q = 'SELECT name FROM genres OFFSET $1 LIMIT $2;';
+  const total = await getSeriesTotal();
+  const result = await query(q, [offset, limit]);
+  const items = result.rows;
+  return [items,total];
 }
 
 // name,number,airDate,overview,season,serie,serieId
@@ -207,7 +230,6 @@ export async function insertSeries(series) {
   const {
     name, airDate, inProduction, tagline, image, description, language, network, url,
   } = series;
-  console.log(series);
 
   // Þurfum að finna út úr því hvernig við ætlum að höndla myndir
   // TODO ákveða hvernig við höndlum myndir
@@ -230,15 +252,11 @@ export async function insertSeries(series) {
     RETURNING *;
     `;
 
-  console.log([name, tagline, description, airDate, inProduction,
-    imgUrl, language, network, url]);
-
   const result = await query(
     q, [name, tagline, description, airDate, inProduction,
       imgUrl, language, network, url],
   );
 
-  console.log(result.rows);
 
   return result;
 }
@@ -279,3 +297,4 @@ export async function updateSeries(column, value, id) {
   const result = await query(q, [value.toString(), parseInt(id, 10)]);
   return result;
 }
+

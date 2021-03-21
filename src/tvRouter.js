@@ -133,12 +133,3 @@ router.get('/tv/:id/season/:id/episode/:id');
  */
 router.delete('/tv/:id/season/:id/episode/:id');
 
-/**
- * TODO
- */
-router.get('/genres');
-
-/**
- * TODO
- */
-router.post('/genres');

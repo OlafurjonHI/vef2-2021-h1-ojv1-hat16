@@ -57,9 +57,7 @@ router.patch('/me', requireAuthentication, async (req, res) => {
   if (!email && !password) res.json({ error: 'please provide atleast email or password' });
   const authorization = req.headers.authorization.split(' ')[1];
   const userID = (getUserIdFromToken(authorization));
-  console.log(userID)
   const user = await findByUsername(userID);
-
   const changed = await updateUser(email, password, user.id);
   const filteredUser = getFilteredUser(changed);
   res.json(filteredUser);
