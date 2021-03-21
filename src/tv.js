@@ -298,3 +298,11 @@ export async function updateSeries(column, value, id) {
   return result;
 }
 
+// export async function deleteFromSeriesGenre
+
+export async function deleteFromTable(table, column, id) {
+  const q = `DELETE FROM ${table} WHERE ${column} = $1;`;
+  const result = query(q, [parseInt(id, 10)]);
+
+  return result;
+}

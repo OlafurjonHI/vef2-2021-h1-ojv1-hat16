@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 
 import express from 'express';
 import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
 
 import { router as tvRouter } from './tvRouter.js';
 import { router as userRouter } from './usersRouter.js';
