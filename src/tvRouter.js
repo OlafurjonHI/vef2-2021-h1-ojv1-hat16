@@ -14,7 +14,7 @@ import {
 } from './validation.js';
 import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
 import { generateJson } from './helpers.js';
-import { findByUsername } from './users.js';
+import { findByUsername, updateUserUpdatedTimeStamp } from './users.js';
 
 // Rótin á þessum router er '/tv' eins og skilgreint er í app.js
 export const router = express.Router();
@@ -220,6 +220,7 @@ router.post('/:id/rate', requireAuthentication, rateValidationMiddleware, catchE
     res.json(row);
   } else {
     const row = await createSerieRatingForUser(rating, user.id, id);
+    await updateUserUpdatedTimeStamp(user.id);
     res.json(row);
   }
 });
@@ -241,6 +242,7 @@ router.post('/:id/state', requireAuthentication, stateValidationMiddleware, catc
     res.json(row);
   } else {
     const row = await createSerieStateForUser(state, user.id, id);
+    await updateUserUpdatedTimeStamp(user.id);
     res.json(row);
   }
 });
@@ -255,6 +257,7 @@ router.patch('/:id/state', requireAuthentication, stateValidationMiddleware, cat
   const user = await findByUsername(getUserIdFromToken(authorization));
   const ratingExists = await getSerieRatingByUserId(id, user.id);
   const row = await updateStateAndRatingForSerieAndUser(id, user.id, ratingExists.rating, state);
+  await updateUserUpdatedTimeStamp(user.id);
   res.json(row);
 });
 
@@ -269,6 +272,7 @@ router.patch('/:id/rate', requireAuthentication, rateValidationMiddleware, catch
   const stateExists = await getSerieStatusByUserId(id, user.id);
   const row = await updateStateAndRatingForSerieAndUser(id, user.id, rating,
     stateExists.status, false);
+  await updateUserUpdatedTimeStamp(user.id);  
   res.json(row);
 });
 
@@ -280,7 +284,8 @@ router.delete('/:id/state', requireAuthentication, async (req, res) => {
   const authorization = req.headers.authorization.split(' ')[1];
   const user = await findByUsername(getUserIdFromToken(authorization));
   const ratingExists = await getSerieRatingByUserId(id, user.id);
-  const row = await updateStateAndRatingForSerieAndUser(id, user.id, ratingExists.rating, '');
+  const row = await updateStateAndRatingForSerieAndUser(id, user.id, ratingExists.rating, undefined);
+  await updateUserUpdatedTimeStamp(user.id);
   res.json(row);
 });
 
@@ -294,5 +299,7 @@ router.delete('/:id/rate', requireAuthentication, async (req, res) => {
   const stateExists = await getSerieStatusByUserId(id, user.id);
   const row = await updateStateAndRatingForSerieAndUser(id, user.id, 0,
     stateExists.status, false);
+  await updateUserUpdatedTimeStamp(user.id);
+
   res.json(row);
 });

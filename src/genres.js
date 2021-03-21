@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 /**
    * TODO
    */
-router.post('/genres', requireAuthentication, isAdmin, async (req, res) => {
+router.post('/', requireAuthentication, isAdmin, async (req, res) => {
   const { name } = req.body;
   const { limit = 10, offset = 0 } = req.query;
   const { host } = req.headers;
