@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import express from 'express';
 import multer from 'multer';
-import cloudinary from 'cloudinary';
 import util from 'util';
 
 import {
@@ -24,12 +23,9 @@ import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
 import { generateJson } from './helpers.js';
 import { findByUsername } from './users.js';
 
-const { promisify } = util;
-
 export const router = express.Router();
 // const storage = multer.memoryStorage();
 const storage = multer.diskStorage({
-
   filename(req, file, cb) {
     cb(null, 'temp.png');
   },
@@ -37,13 +33,6 @@ const storage = multer.diskStorage({
 
 const multerUploads = multer({ storage });
 // Rótin á þessum router er '/tv' eins og skilgreint er í app.js
-
-router.post('/test',
-  multerUploads.single('image'),
-  async (req, res) => {
-    console.log(req.file);
-    uploadImg(req.file.path).then((d) => res.json(d)).catch((e) => res.json('error'));
-  });
 
 /**
  * Skilar síðum af sjónvarpsþáttum með grunnupplýsingum
@@ -63,13 +52,14 @@ router.get('/', async (req, res) => {
     isImageValid,
  */
 router.post('/',
+  multerUploads.single('image'),
   requireAuthentication,
   isAdmin,
   seriesValidationMiddleware,
   catchErrors(validationCheck),
   superSanitizationMiddleware,
   async (req, res) => {
-    const result = await insertSeries(req.body);
+    const result = await insertSeries(req);
     res.json(result.rows);
   });
 
@@ -155,7 +145,7 @@ router.post('/:id/season/',
   superSanitizationMiddleware,
   async (req, res) => {
     const { id } = req.params;
-    const season = await createSeasons(req.body, id);
+    const season = await createSeasons(req, id);
     res.json(season);
   });
 
