@@ -16,6 +16,18 @@ venjulegur:
     - aðgerð: POST
     - JSON inntak (dæmi): ```  {"username": "verybasicuser", "password": "1234567890", "email": "avarage@joe.is" } ```
     - Úttak: dæmi 
+
+
+## Notendur sem eru tilbúnir til notkunar eftir að keyrt er setup skrá
+admin: {'username':'admin','password':'1234567890','email':'admin@admin.is'}
+venjulegur: { 'username': 'verybasicuser', 'password': '1234567890', 'email': 'avarage@joe.is' }
+
+## Dæmi um keyrslu
+### Uppsetning
+Stofna þarf postgresql gagnagrunn. Í rótinni á repoinu er "dp-dump" skrá. Það er afrit af gagnagrunninum sem hægt er að keyra upp á postgresql gagnaggrunn. Það er hægt með því að nota psql CLI tól og keyra skipunina
+
+      psql -U postgres -f backupfile.sql
+
 ## Verkefnalýsing
 Útfæra skal vefþjónustur fyrir sjónvarpsþáttavef:
 
