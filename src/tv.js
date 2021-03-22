@@ -207,9 +207,10 @@ export async function createEpisodes(episode) {
 
 // name,number,airDate,overview,poster,serie,serieId
 export async function createSeasons(series, id = null) {
+  const data = (series.body) || series;
   const {
     serieId = id, name, airDate, overview, serie, number,
-  } = series.body;
+  } = data;
   let parsedDate = null;
   if (airDate && airDate.length > 0) {
     const d = Date.parse(airDate);
