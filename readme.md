@@ -1,88 +1,9 @@
 # Vefforritun 2, 2021, hópverkefni 1
-Unnið saman af 
+Unnið saman af
 Hafþór Aron - hat16@hi.is
 Ólafur Jón - ojv1@hi.is
-## Notendur sem eru tilbúnir til notkunar eftir að keyrt er setup skrá
-admin: 
-  ```json
-  {"username":"admin","password":"1234567890","email":"admin@admin.is"}
-  ```
-venjulegur:
-  ```json
-  {"username": "verybasicuser", "password": "1234567890", "email": "avarage@joe.is" }
-  ```
-## Dæmi um Köll
-  Gott forrit til að prufukeyra vefþjónustuna er t.d. [Postman](https://www.postman.com/)
-  **Dæmi um köll eru tekin ítarlega að neðan en sem hérna eru nokkur dæmi líka:
-  - innskráning á notanda:
-    - slóð: https://vef2-2021-h1-ojv1-hat16.herokuapp.com/users/login
-    - aðgerð: POST
-    - JSON inntak (dæmi): ```json  {"username": "verybasicuser", "password": "1234567890" } ```
-    - Úttak: dæmi: 
-    ```json 
-     {
-          "user": {
-              "id": "9",
-              "password": "$2b$11$60cT.qDU8ouMV97Zk6HPdOc8DA8BgufEw2kt8a/VIdtwajG5t7Y5u",
-              "admin": false,
-              "username": "verybasicuser",
-              "email": "avarage@joe.is",
-              "created": "2021-03-21T11:22:37.935Z",
-              "updated": "2021-03-21T11:22:37.935Z"
-          },
-          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InZlcnliYXNpY3VzZXIiLCJpYXQiOjE2MTYzNzM4MzksImV4cCI6MTYxNjM3NzQzOX0.qSum6BOxP152Kfe-24aebLcO7CK4VVsPwnwOXJOqQ8k",
-          "expiresIn": 3600
-      } 
-      ```
-  - Fá upplýsingar um þátt 
-    - slóð: https://vef2-2021-h1-ojv1-hat16.herokuapp.com/tv/:id
-    - aðgerð: GET
-    - Úttak: dæmi: 
-     ```json
-     {
-        "id": 1,
-        "name": "WandaVision",
-        "air_date": "2021-01-15T00:00:00.000Z",
-        "in_production": true,
-        "tagline": "Experience a new vision of reality.",
-        "image": "http://res.cloudinary.com/vef2-2021-h2/image/upload/v1616354957/cam6stqhijpj3tykhenr.jpg",
-        "description": "Wanda Maximoff and Vision—two super-powered beings living idealized suburban lives—begin to suspect that everything is not as it seems.",
-        "language": "en",
-        "network": "Disney+",
-        "url": "https://www.disneyplus.com/series/wandavision/4SrN28ZjDLwH",
-        "avaragerating": 0,
-        "ratingCount": 0,
-        "rating": "unrated",
-        "genres": [
-            {
-                "name": "Drama"
-            },
-            {
-                "name": "Mystery"
-            },
-            {
-                "name": "Sci-Fi & Fantasy"
-            }
-        ],
-        "seasons": [
-            {
-                "name": "Season 1",
-                "number": 1,
-                "air_date": "2021-01-15T00:00:00.000Z",
-                "overview": "",
-                "poster": "https://res.cloudinary.com/vef2-2021-h2/image/upload/v1616374608/trfnqfyk1x6vhjv7anyy.jpg"
-            }
-        ]
-    } 
-```
 
-
-## Notendur sem eru tilbúnir til notkunar eftir að keyrt er setup skrá
-admin: {'username':'admin','password':'1234567890','email':'admin@admin.is'}
-venjulegur: { 'username': 'verybasicuser', 'password': '1234567890', 'email': 'avarage@joe.is' }
-
-## Dæmi um keyrslu
-### Uppsetning
+## Uppsetning
 Stofna þarf postgresql gagnagrunn. Í rótinni á repoinu er "dp-dump" skrá. Það er afrit af gagnagrunninum sem hægt er að keyra upp á PostgreSQL gagnaggrunn. Það er hægt með því að nota psql CLI tól og keyra skipunina
 
     psql -U postgres -f backupfile.sql
@@ -93,24 +14,89 @@ Einnig er hægt að stofna PostgreSQL gagnagrunn út frá schema_new sem er í s
 
 eða með restore möguleika í pgAdmin.  Skilgreina þarf svo gagnagrunnstengingu með breytunni DATABASE_URL í .env skrá í rót verkefnisins. Til þess að fá gögnin inn er svo hægt að keyra ```NPM run setup``` scripuna, en hún matar inn þau gögn sem gefin voru í upphafi verkefnis. Hún stofnar meðal annars tvo notendur sem hægt er að nota við prófun á verkefninu:
 
-    admin: {
-      'username':'admin',
-      'password':'1234567890',
-      'email':'admin@admin.is'
-      }
+  ```json
+  admin: {
+    "username":"admin",
+    "password":"1234567890",
+    "email":"admin@admin.is"
+    }
 
-    venjulegur: {
-      'username': 'verybasicuser',
-      'password': '1234567890',
-      'email': 'avarage@joe.is'
-      }
-
+  venjulegur: {
+    "username": "verybasicuser",
+    "password": "1234567890",
+    "email": "avarage@joe.is"
+    }
+  ```
 
 Þegar því er lokið er hægt að keyra verkefnið með ```NPM run dev``` til að keyra það locally.
 
 Í staðinn fyrir að fara í gegnum uppsetningarferlið er einnig hægt að [nálgast verkefnið á Heroku](https://vef2-2021-h1-ojv1-hat16.herokuapp.com/).
+## Dæmi um Köll
+  Gott forrit til að prufukeyra vefþjónustuna er t.d. [Postman](https://www.postman.com/). Dæmi um köll eru tekin ítarlega að neðan en sem hérna eru nokkur dæmi líka:
+  - Innskráning á notanda:
+    - Slóð: https://vef2-2021-h1-ojv1-hat16.herokuapp.com/users/login
+    - Aðgerð: POST
+    - JSON inntak (dæmi): ```json  {"username": "verybasicuser", "password": "1234567890" } ```
+    - Úttak: dæmi:
+    ```json
+      {
+        "user": {
+            "id": "9",
+            "password": "$2b$11$60cT.qDU8ouMV97Zk6HPdOc8DA8BgufEw2kt8a/VIdtwajG5t7Y5u",
+            "admin": false,
+            "username": "verybasicuser",
+            "email": "avarage@joe.is",
+            "created": "2021-03-21T11:22:37.935Z",
+            "updated": "2021-03-21T11:22:37.935Z"
+        },
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9. eyJpZCI6InZlcnliYXNpY3VzZXIiLCJpYXQiOjE2MTYzNzM4MzksImV4cCI6MTYxNjM3NzQzOX0. qSum6BOxP152Kfe-24aebLcO7CK4VVsPwnwOXJOqQ8k",
+        "expiresIn": 3600
+      }
+    ```
 
-## Verkefnalýsing
+  - Fá upplýsingar um þátt
+    - Slóð: https://vef2-2021-h1-ojv1-hat16.herokuapp.com/tv/:id
+    - Aðgerð: GET
+    - Úttak: dæmi:
+
+```json
+      {
+          "id": 1,
+          "name": "WandaVision",
+          "air_date": "2021-01-15T00:00:00.000Z",
+          "in_production": true,
+          "tagline": "Experience a new vision of reality.",
+          "image": "http://res.cloudinary.com/vef2-2021-h2/image/upload/v1616354957/cam6stqhijpj3tykhenr.jpg",
+          "description": "Wanda Maximoff and Vision—two super-powered beings living idealized suburban  lives—begin to suspect that everything is not as it seems.",
+          "language": "en",
+          "network": "Disney+",
+          "url": "https://www.disneyplus.com/series/wandavision/4SrN28ZjDLwH",
+          "avaragerating": 0,
+          "ratingCount": 0,
+          "rating": "unrated",
+          "genres": [
+              {
+                  "name": "Drama"
+              },
+              {
+                  "name": "Mystery"
+              },
+              {
+                  "name": "Sci-Fi & Fantasy"
+              }
+          ],
+          "seasons": [
+              {
+                  "name": "Season 1",
+                  "number": 1,
+                  "air_date": "2021-01-15T00:00:00.000Z",
+                  "overview": "",
+                  "poster": "https://res.cloudinary.com/vef2-2021-h2/image/upload/v1616374608/  trfnqfyk1x6vhjv7anyy.jpg"
+              }
+          ]
+      }
+```
+# Fyrirmæli - verkefnalýsing
 Útfæra skal vefþjónustur fyrir sjónvarpsþáttavef:
 
 * Gefin eru/verða gögn fyrir sjónvarpsþætti, season og staka þætti sem flytja þarf inn í gagnagrunn
@@ -119,7 +105,7 @@ eða með restore möguleika í pgAdmin.  Skilgreina þarf svo gagnagrunnstengin
   * Stjórnendur sem geta breytt, bætt við, og eytt sjónvarpsþáttum, seasons og stökum þáttum
   * Notendum sem geta skráð sína „stöðu“ fyrir sjónvarpsþátt, season og staka þætti
 
-## Notendaumsjón
+### Notendaumsjón
 
 Notendaumsjón skiptist í þrennt: óauðkenndur notandi, notendur og stjórnendur.
 
@@ -141,7 +127,7 @@ Nota skal JWT með passport og geyma notendur i gagnagrunni. Útfæra þarf auð
 * Einn almennan notanda sem hefur vistaðar stöður á einhverjum af gefnum þáttum, season, þáttum, skrá skal upplýsingar um notanda í `README`
   * Þessi notandi er til þess að einfalda yfirferð á verkefni.
 
-## Töflur
+### Töflur
 
 Skilgreina skal töflur fyrir:
 
@@ -188,7 +174,7 @@ Töflur skulu hafa auðkenni og nota [_foreign keys_](https://www.postgresql.org
 
 Nota þarf _join_ til að sameina gögn notanda við sjónvarpsþáttagögn. Sjá dæmi í fyrirlestri 5.
 
-## Gögn
+### Gögn
 
 Þegar verkefni er sett upp skal færa inn gögn sem gefin eru í `data/` möppu.
 
@@ -200,7 +186,7 @@ Nota þarf _join_ til að sameina gögn notanda við sjónvarpsþáttagögn. Sj�
 
 Gögnin eru fengin frá [The Movie Database](https://www.themoviedb.org/) og eru gögnin 20 vinsælustu þáttaraðirnar í febrúar 2021.
 
-## Myndir
+### Myndir
 
 Gefnar eru myndir fyrir sjónvarpsþætti í `img/`.
 
@@ -214,7 +200,7 @@ Aðeins ætti að leyfa myndir af eftirfarandi tegund (`mime type`):
 
 [Þó svo að Cloudinary styðji fleiri tegundir](https://cloudinary.com/documentation/image_transformations#supported_image_formats), þá er hægt að staðfesta að við höfum mynd _áður_ en uploadað á Cloudinary.
 
-## Vefþjónustur
+### Vefþjónustur
 
 Útfæra skal vefþjónustur til að útfæra alla virkni. Nota skal `JSON` í öllum samskiptum.
 
@@ -282,7 +268,7 @@ Aldrei skal skila eða sýna hash fyrir lykilorð.
 * `/tv/:id`
   * Ef notandi er innskráður skal sýna einkunn og stöðu viðkomandi á sjónvarpsþætti.
 
-## Annað
+### Annað
 
 Allar niðurstöður sem geta skilað mörgum færslum (fleiri en 10) skulu skila _síðum_.
 
@@ -290,7 +276,7 @@ Ekki þarf að útfæra „týnt lykilorð“ virkni.
 
 Lausn skal keyra á Heroku.
 
-## Sýnilausn
+### Sýnilausn
 
 Hægt er að skoða sýnilausn á: `https://vef2-2021-h1-synilausn.herokuapp.com/`.
 
@@ -299,7 +285,7 @@ Hægt er að skoða sýnilausn á: `https://vef2-2021-h1-synilausn.herokuapp.com
 * Gögn færð inn með myndum
 * Óinnskráður notandi getur skoðað öll gögn
 
-## Hópavinna
+### Hópavinna
 
 Verkefnið skal unnið í hóp, helst með þremur einstaklingum. Hópar með tveim eða fjórum einstaklingum eru einnig í lagi, ekki er dregið úr kröfum fyrir færri í hóp en gerðar eru auknar kröfur ef fleiri en þrír einstaklingar eru í hóp.
 
@@ -307,7 +293,7 @@ Hægt er að auglýsa eftir hóp á slack á rásinni #vef2-2021-hópur.
 
 Hafið samband við kennara ef ekki tekst eða ekki er mögulegt að vinna í hóp.
 
-## README
+### README
 
 Í rót verkefnis skal vera `README.md` skjal sem tilgreinir:
 
@@ -317,19 +303,19 @@ Hafið samband við kennara ef ekki tekst eða ekki er mögulegt að vinna í h�
 * Innskráning fyrir almennan notanda ásamt lykilorði
 * Nöfn og notendanöfn allra í hóp
 
-## Mat
+### Mat
 
 * 25% – Töflur og gögn lesin inn
 * 25% – Auðkenning og notendaumsjón
 * 50% — Vefþjónustur skilgreindar skv. forskrift
 
-## Sett fyrir
+### Sett fyrir
 
 Verkefni sett fyrir í fyrirlestri fimmtudaginn 4. febrúar 2021.
 
 Verkefni fullmótað sett fyrir á Canvas sunnudaginn 21. febrúar 2021.
 
-## Skil
+### Skil
 
 Á Canvas eru skilgreindir 40 hópar (People > Hópverkefni 1) sem hópur þarf að skrá sig í. Fyrsti nemandi sem skráir sig er sjálfgefið hópstjóri.
 
@@ -344,7 +330,7 @@ Skilaboð skulu innihalda slóð á GitHub repo fyrir verkefni, og dæmatímaken
 
 Athugið að skilum fyrir verkefni lokar kl. 23:59 sunnudaginn 21. mars 2021.
 
-## Einkunn
+### Einkunn
 
 Sett verða fyrir 6 minni verkefni þar sem 5 bestu gilda 8% hvert, samtals 40% af lokaeinkunn.
 
