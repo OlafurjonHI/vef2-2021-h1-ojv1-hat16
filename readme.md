@@ -1,5 +1,6 @@
 # Vefforritun 2, 2021, hópverkefni 1
 
+
 ## Notendur sem eru tilbúnir til notkunar eftir að keyrt er setup skrá
 admin: {'username':'admin','password':'1234567890','email':'admin@admin.is'}
 venjulegur: { 'username': 'verybasicuser', 'password': '1234567890', 'email': 'avarage@joe.is' }
@@ -9,7 +10,6 @@ venjulegur: { 'username': 'verybasicuser', 'password': '1234567890', 'email': 'a
 Stofna þarf postgresql gagnagrunn. Í rótinni á repoinu er "dp-dump" skrá. Það er afrit af gagnagrunninum sem hægt er að keyra upp á postgresql gagnaggrunn. Það er hægt með því að nota psql CLI tól og keyra skipunina
 
       psql -U postgres -f backupfile.sql
-
 
 ## Verkefnalýsing
 Útfæra skal vefþjónustur fyrir sjónvarpsþáttavef:
