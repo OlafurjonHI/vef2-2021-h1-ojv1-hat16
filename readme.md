@@ -83,9 +83,32 @@ venjulegur: { 'username': 'verybasicuser', 'password': '1234567890', 'email': 'a
 
 ## Dæmi um keyrslu
 ### Uppsetning
-Stofna þarf postgresql gagnagrunn. Í rótinni á repoinu er "dp-dump" skrá. Það er afrit af gagnagrunninum sem hægt er að keyra upp á postgresql gagnaggrunn. Það er hægt með því að nota psql CLI tól og keyra skipunina
+Stofna þarf postgresql gagnagrunn. Í rótinni á repoinu er "dp-dump" skrá. Það er afrit af gagnagrunninum sem hægt er að keyra upp á PostgreSQL gagnaggrunn. Það er hægt með því að nota psql CLI tól og keyra skipunina
 
-      psql -U postgres -f backupfile.sql
+    psql -U postgres -f backupfile.sql
+
+Einnig er hægt að stofna PostgreSQL gagnagrunn út frá schema_new sem er í sql möppunni. Það er hægt er með PostgreSQL skipunninni:
+
+    psql -d database_name -h localhost -U postgres < path/db.sql
+
+eða með restore möguleika í pgAdmin.  Skilgreina þarf svo gagnagrunnstengingu með breytunni DATABASE_URL í .env skrá í rót verkefnisins. Til þess að fá gögnin inn er svo hægt að keyra ```NPM run setup``` scripuna, en hún matar inn þau gögn sem gefin voru í upphafi verkefnis. Hún stofnar meðal annars tvo notendur sem hægt er að nota við prófun á verkefninu:
+
+    admin: {
+      'username':'admin',
+      'password':'1234567890',
+      'email':'admin@admin.is'
+      }
+
+    venjulegur: {
+      'username': 'verybasicuser',
+      'password': '1234567890',
+      'email': 'avarage@joe.is'
+      }
+
+
+Þegar því er lokið er hægt að keyra verkefnið með ```NPM run dev``` til að keyra það locally.
+
+Í staðinn fyrir að fara í gegnum uppsetningarferlið er einnig hægt að [nálgast verkefnið á Heroku](https://vef2-2021-h1-ojv1-hat16.herokuapp.com/).
 
 ## Verkefnalýsing
 Útfæra skal vefþjónustur fyrir sjónvarpsþáttavef:
