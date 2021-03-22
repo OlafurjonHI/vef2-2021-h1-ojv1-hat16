@@ -1,10 +1,10 @@
 # Vefforritun 2, 2021, hópverkefni 1
-Unnið saman af
-Hafþór Aron - hat16@hi.is
+Unnið saman af: <br>
+Hafþór Aron - hat16@hi.is <br>
 Ólafur Jón - ojv1@hi.is
 
 ## Uppsetning
-Stofna þarf postgresql gagnagrunn. Í rótinni á repoinu er "dp-dump" skrá. Það er afrit af gagnagrunninum sem hægt er að keyra upp á PostgreSQL gagnaggrunn. Það er hægt með því að nota psql CLI tól og keyra skipunina
+Stofna þarf PostgreSQL gagnagrunn. Í rótinni á repoinu er "dp-dump" skrá. Það er afrit af gagnagrunninum sem hægt er að keyra upp á PostgreSQL gagnagrunn. Það er hægt með því að nota psql CLI tól og keyra skipunina
 
     psql -U postgres -f backupfile.sql
 
@@ -12,7 +12,7 @@ Einnig er hægt að stofna PostgreSQL gagnagrunn út frá schema_new sem er í s
 
     psql -d database_name -h localhost -U postgres < path/db.sql
 
-eða með restore möguleika í pgAdmin.  Skilgreina þarf svo gagnagrunnstengingu með breytunni DATABASE_URL í .env skrá í rót verkefnisins. Til þess að fá gögnin inn er svo hægt að keyra ```NPM run setup``` scripuna, en hún matar inn þau gögn sem gefin voru í upphafi verkefnis. Hún stofnar meðal annars tvo notendur sem hægt er að nota við prófun á verkefninu:
+eða með restore möguleika í pgAdmin.  Skilgreina þarf svo gagnagrunnstengingu með breytunni DATABASE_URL í .env skrá í rót verkefnisins. Til þess að fá gögnin inn er svo hægt að keyra ```NPM run setup``` scriptuna, en hún matar inn þau gögn sem gefin voru í upphafi verkefnis. Hún stofnar meðal annars tvo notendur sem hægt er að nota við prófun á verkefninu:
 
   ```json
   admin: {
