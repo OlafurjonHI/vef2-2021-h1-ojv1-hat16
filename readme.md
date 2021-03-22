@@ -1,8 +1,21 @@
 # Vefforritun 2, 2021, hópverkefni 1
-
+Unnið saman af 
+Hafþór Aron - hat16@hi.is
+Ólafur Jón - ojv1@hi.is
 ## Notendur sem eru tilbúnir til notkunar eftir að keyrt er setup skrá
-admin: {'username':'admin','password':'1234567890','email':'admin@admin.is'}
-venjulegur: { 'username': 'verybasicuser', 'password': '1234567890', 'email': 'avarage@joe.is' }
+admin: 
+  {"username":"admin","password":"1234567890","email":"admin@admin.is"} 
+venjulegur: 
+  {"username": "verybasicuser", "password": "1234567890", "email": "avarage@joe.is" }
+
+## Dæmi um Köll
+  Gott forrit til að prufukeyra vefþjónustuna er t.d. [Postman](https://www.postman.com/)
+  **Dæmi um köll eru tekin ítarlega að neðan en sem hérna eru nokkur dæmi líka:
+  - innskráning á notanda:
+    - slóð: https://vef2-2021-h1-ojv1-hat16.herokuapp.com/users/login
+    - aðgerð: POST
+    - JSON inntak (dæmi): ```  {"username": "verybasicuser", "password": "1234567890", "email": "avarage@joe.is" } ```
+    - Úttak: dæmi 
 ## Verkefnalýsing
 Útfæra skal vefþjónustur fyrir sjónvarpsþáttavef:
 

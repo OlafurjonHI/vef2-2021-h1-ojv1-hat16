@@ -208,7 +208,7 @@ export async function createEpisodes(episode) {
 // name,number,airDate,overview,poster,serie,serieId
 export async function createSeasons(series, id = null) {
   const {
-    serieId = id, name, airDate, poster, overview, serie, number,
+    serieId = id, name, airDate, overview, serie, number,
   } = series.body;
   let parsedDate = null;
   if (airDate && airDate.length > 0) {

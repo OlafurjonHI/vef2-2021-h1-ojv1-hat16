@@ -5,12 +5,13 @@ import passport, {
 } from './login.js';
 
 import {
-  createUser, findById, findByUsername, getAllUsers, updateUserAdmin, updateUser,
+  createUser, findById, findByUsername, getAllUsers, updateUserAdmin,
+  updateUser, updateUserUpdatedTimeStamp,
 } from './users.js';
 import { generateJson, getFilteredUser } from './helpers.js';
 import {
   validationMiddleware, xssSanitizationMiddleware, validationCheck,
-  superSanitizationMiddleware, loginValidationMiddleware, catchErrors, 
+  superSanitizationMiddleware, loginValidationMiddleware, catchErrors,
   userAdminValidationMiddleware,
 } from './validation.js';
 
@@ -58,6 +59,7 @@ router.patch('/me', requireAuthentication, async (req, res) => {
   const authorization = req.headers.authorization.split(' ')[1];
   const userID = (getUserIdFromToken(authorization));
   const user = await findByUsername(userID);
+  await updateUserUpdatedTimeStamp(userID);
   const changed = await updateUser(email, password, user.id);
   const filteredUser = getFilteredUser(changed);
   res.json(filteredUser);
@@ -76,7 +78,9 @@ router.patch('/:id?', requireAuthentication, isAdmin, userAdminValidationMiddlew
   if (!admin) {
     res.json({ error: 'admin is required, either true or false' });
   }
+  await updateUserUpdatedTimeStamp(id);
   const user = await updateUserAdmin(admin, id);
+
   if (!user) {
     res.json({ error: 'operation failed' });
   }

@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import express from 'express';
 import multer from 'multer';
-import util from 'util';
 
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
@@ -13,7 +12,8 @@ import {
 } from './tv.js';
 import {
   seasonsValidationMiddleware, catchErrors, validationCheck, rateValidationMiddleware,
-  stateValidationMiddleware, isSeriesValid, isSeasonValid, isImageValid, superSanitizationMiddleware,
+  stateValidationMiddleware, isSeriesValid,
+  isSeasonValid, superSanitizationMiddleware,
   seriesValidationMiddleware,
 } from './validation.js';
 import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
