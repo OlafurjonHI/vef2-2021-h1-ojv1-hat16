@@ -37,13 +37,13 @@ const insertSeries = async () => {
 };
 
 const setup = async () => {
-  insertSeries();
+  // insertSeries();
   insertSeasons();
-  insertEpisodes();
-  createAdmin();
-  const req = {};
-  req.body = { username: 'verybasicuser', password: '1234567890', email: 'avarage@joe.is' };
-  createUser(req);
+  // insertEpisodes();
+  // createAdmin();
+  // const req = {};
+  // req.body = { username: 'verybasicuser', password: '1234567890', email: 'avarage@joe.is' };
+  // createUser(req);
 };
 
 setup();

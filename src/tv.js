@@ -216,7 +216,13 @@ export async function createSeasons(series, id = null) {
     const d = Date.parse(airDate);
     parsedDate = new Date(d);
   }
-  const imgUrl = await uploadImg(series.file.path);
+  let imgUrl = '';
+  try {
+    imgUrl = await uploadImg(series.file.path);
+  } catch (e) {
+    imgUrl = 'URL';
+    console.error(e);
+  }
   const q = `
     INSERT INTO
       seasons (serie_id,name,overview,air_date, poster,number, serie)
@@ -314,7 +320,13 @@ export async function insertSeries(series) {
     // eslint-disable-next-line no-unused-vars
     name, airDate, inProduction, tagline, image, description, language, network, url,
   } = series.body;
-  const imgUrl = await uploadImg(series.file.path);
+  let imgUrl = '';
+  try {
+    imgUrl = await uploadImg(series.file.path);
+  } catch (e) {
+    imgUrl = 'URL';
+    console.error(e);
+  }
 
   const q = `INSERT INTO
     series (name, tagline, description, air_date,
@@ -348,7 +360,7 @@ export async function insertEpisode(episode) {
 
 export async function createSeries(series) {
   const {
-    id, name, tagline, description, airDate, inProduction, image, language, network, homepage,
+    id, name, tagline, description, airDate, inProduction, language, network, homepage,
   } = series;
   let parsedDate = null;
   if (airDate.length > 0) {
@@ -363,7 +375,13 @@ export async function createSeries(series) {
     RETURNING *
   `;
   try {
-    const imgUrl = await uploadImg(`./data/img/${image}`);
+    let imgUrl = '';
+    try {
+      imgUrl = await uploadImg(series.file.path);
+    } catch (e) {
+      imgUrl = 'URL';
+      console.error(e);
+    }
     const result = await query(
       q, [id, name, tagline, description, parsedDate,
         inProduction, imgUrl, language, network, homepage],
