@@ -14,8 +14,28 @@ venjulegur:
   - innskráning á notanda:
     - slóð: https://vef2-2021-h1-ojv1-hat16.herokuapp.com/users/login
     - aðgerð: POST
-    - JSON inntak (dæmi): ```  {"username": "verybasicuser", "password": "1234567890", "email": "avarage@joe.is" } ```
-    - Úttak: dæmi 
+    - JSON inntak (dæmi): ```json  {"username": "verybasicuser", "password": "1234567890" } ```
+    - Úttak: dæmi: 
+    ```json 
+     {
+          "user": {
+              "id": "9",
+              "password": "$2b$11$60cT.qDU8ouMV97Zk6HPdOc8DA8BgufEw2kt8a/VIdtwajG5t7Y5u",
+              "admin": false,
+              "username": "verybasicuser",
+              "email": "avarage@joe.is",
+              "created": "2021-03-21T11:22:37.935Z",
+              "updated": "2021-03-21T11:22:37.935Z"
+          },
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InZlcnliYXNpY3VzZXIiLCJpYXQiOjE2MTYzNzM4MzksImV4cCI6MTYxNjM3NzQzOX0.qSum6BOxP152Kfe-24aebLcO7CK4VVsPwnwOXJOqQ8k",
+          "expiresIn": 3600
+      } 
+      ```
+  - Fá upplýsingar um þátt 
+    - slóð: https://vef2-2021-h1-ojv1-hat16.herokuapp.com/tv/:id
+    - aðgerð: GET
+    - JSON inntak (dæmi): ```json  {"username": "verybasicuser", "password": "1234567890" } ```
+    - Úttak: dæmi: 
 
 
 ## Notendur sem eru tilbúnir til notkunar eftir að keyrt er setup skrá
