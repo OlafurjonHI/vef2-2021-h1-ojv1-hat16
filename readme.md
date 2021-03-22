@@ -74,7 +74,7 @@ venjulegur:
             }
         ]
     } 
-```
+    ```
 
 
 ## Notendur sem eru tilbúnir til notkunar eftir að keyrt er setup skrá

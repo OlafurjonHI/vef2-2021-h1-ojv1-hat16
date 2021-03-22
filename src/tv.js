@@ -221,7 +221,6 @@ export async function createSeasons(series, id = null) {
   try {
     imgUrl = await uploadImg(`./data/img/${filePath}`);
   } catch (e) {
-    imgUrl = 'URL';
     console.error(e);
   }
   const q = `
