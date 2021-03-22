@@ -4,9 +4,6 @@ import multer from 'multer';
 import util from 'util';
 
 import {
-  uploadImg, uploadStream, upload,
-} from './cloudinary.js';
-import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
   insertSeries, updateSeries, getOnlySeriesById, deleteFromTable, createSeasons,
@@ -21,13 +18,13 @@ import {
 } from './validation.js';
 import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
 import { generateJson } from './helpers.js';
-import { findByUsername } from './users.js';
+import { findByUsername, updateUserUpdatedTimeStamp } from './users.js';
 
 export const router = express.Router();
 // const storage = multer.memoryStorage();
 const storage = multer.diskStorage({
   filename(req, file, cb) {
-    cb(null, 'temp.png');
+    cb(null, `temp.${file.mimetype.split('\\')[1]}`);
   },
 });
 
@@ -137,6 +134,7 @@ router.get('/:id/season/',
  * Býr til nýtt í season í sjónvarpþætti, aðeins ef notandi er stjórnandi
  */
 router.post('/:id/season/',
+  multerUploads.single('poster'),
   isSeriesValid,
   requireAuthentication,
   isAdmin,

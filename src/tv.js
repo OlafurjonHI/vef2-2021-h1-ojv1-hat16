@@ -215,7 +215,7 @@ export async function createSeasons(series, id = null) {
     const d = Date.parse(airDate);
     parsedDate = new Date(d);
   }
-  const imgUrl = await uploadImg(series.file.path).catch(console.error('Error uploading image'));
+  const imgUrl = await uploadImg(series.file.path);
   const q = `
     INSERT INTO
       seasons (serie_id,name,overview,air_date, poster,number, serie)
@@ -313,7 +313,7 @@ export async function insertSeries(series) {
     // eslint-disable-next-line no-unused-vars
     name, airDate, inProduction, tagline, image, description, language, network, url,
   } = series.body;
-  const imgUrl = await uploadImg(series.file.path).catch(console.error('Error uploading image'));
+  const imgUrl = await uploadImg(series.file.path);
 
   const q = `INSERT INTO
     series (name, tagline, description, air_date,
