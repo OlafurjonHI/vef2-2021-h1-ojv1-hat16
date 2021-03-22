@@ -208,6 +208,7 @@ export async function createEpisodes(episode) {
 // name,number,airDate,overview,poster,serie,serieId
 export async function createSeasons(series, id = null) {
   const data = (series.body) || series;
+  const filePath = series.file.path || series.poster;
   const {
     serieId = id, name, airDate, overview, serie, number,
   } = data;
@@ -218,7 +219,7 @@ export async function createSeasons(series, id = null) {
   }
   let imgUrl = '';
   try {
-    imgUrl = await uploadImg(series.file.path);
+    imgUrl = await uploadImg(`./data/img/${filePath}`);
   } catch (e) {
     imgUrl = 'URL';
     console.error(e);
