@@ -241,12 +241,9 @@ export async function createSeasons2(series, id = null) {
     const d = Date.parse(airDate);
     parsedDate = new Date(d);
   }
-  let imgUrl = 'FAKEPATH';
-  if (!poster == null) {
-    imgUrl = await uploadImg(`./data/img/${poster}`);
-  } else {
-    imgUrl = 'FAKEPATH';
-  }
+
+  const imgUrl = await uploadImg(`./data/img/${poster}`).catch();
+
   const q = `
     INSERT INTO
       seasons (serie_id,name,overview,air_date, poster,number, serie)
