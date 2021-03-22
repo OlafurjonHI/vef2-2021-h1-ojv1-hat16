@@ -4,10 +4,13 @@ Hafþór Aron - hat16@hi.is
 Ólafur Jón - ojv1@hi.is
 ## Notendur sem eru tilbúnir til notkunar eftir að keyrt er setup skrá
 admin: 
-  {"username":"admin","password":"1234567890","email":"admin@admin.is"} 
-venjulegur: 
+  ```json
+  {"username":"admin","password":"1234567890","email":"admin@admin.is"}
+  ```
+venjulegur:
+  ```json
   {"username": "verybasicuser", "password": "1234567890", "email": "avarage@joe.is" }
-
+  ```
 ## Dæmi um Köll
   Gott forrit til að prufukeyra vefþjónustuna er t.d. [Postman](https://www.postman.com/)
   **Dæmi um köll eru tekin ítarlega að neðan en sem hérna eru nokkur dæmi líka:
@@ -34,8 +37,44 @@ venjulegur:
   - Fá upplýsingar um þátt 
     - slóð: https://vef2-2021-h1-ojv1-hat16.herokuapp.com/tv/:id
     - aðgerð: GET
-    - JSON inntak (dæmi): ```json  {"username": "verybasicuser", "password": "1234567890" } ```
     - Úttak: dæmi: 
+     ```json
+     {
+        "id": 1,
+        "name": "WandaVision",
+        "air_date": "2021-01-15T00:00:00.000Z",
+        "in_production": true,
+        "tagline": "Experience a new vision of reality.",
+        "image": "http://res.cloudinary.com/vef2-2021-h2/image/upload/v1616354957/cam6stqhijpj3tykhenr.jpg",
+        "description": "Wanda Maximoff and Vision—two super-powered beings living idealized suburban lives—begin to suspect that everything is not as it seems.",
+        "language": "en",
+        "network": "Disney+",
+        "url": "https://www.disneyplus.com/series/wandavision/4SrN28ZjDLwH",
+        "avaragerating": 0,
+        "ratingCount": 0,
+        "rating": "unrated",
+        "genres": [
+            {
+                "name": "Drama"
+            },
+            {
+                "name": "Mystery"
+            },
+            {
+                "name": "Sci-Fi & Fantasy"
+            }
+        ],
+        "seasons": [
+            {
+                "name": "Season 1",
+                "number": 1,
+                "air_date": "2021-01-15T00:00:00.000Z",
+                "overview": "",
+                "poster": "https://res.cloudinary.com/vef2-2021-h2/image/upload/v1616374608/trfnqfyk1x6vhjv7anyy.jpg"
+            }
+        ]
+    } 
+```
 
 
 ## Notendur sem eru tilbúnir til notkunar eftir að keyrt er setup skrá
