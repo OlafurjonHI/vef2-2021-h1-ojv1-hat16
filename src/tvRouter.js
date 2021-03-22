@@ -1,12 +1,8 @@
 /* eslint-disable camelcase */
 import express from 'express';
 import multer from 'multer';
-import cloudinary from 'cloudinary';
 import util from 'util';
 
-import {
-  storage, uploadImg, uploadStream, upload,
-} from './cloudinary.js';
 import {
   getSeries, getSeriesById, getSeasonTotalBySerieId,
   getSeasonsBySerieId, getSeasonsBySerieIdAndSeason, getEpisodesBySerieIdAndSeason,
@@ -22,21 +18,18 @@ import {
 } from './validation.js';
 import { requireAuthentication, isAdmin, getUserIdFromToken } from './login.js';
 import { generateJson } from './helpers.js';
-import { findByUsername } from './users.js';
-
-const { promisify } = util;
+import { findByUsername, updateUserUpdatedTimeStamp } from './users.js';
 
 export const router = express.Router();
 // const storage = multer.memoryStorage();
+const storage = multer.diskStorage({
+  filename(req, file, cb) {
+    cb(null, `temp.${file.mimetype.split('\\')[1]}`);
+  },
+});
+
 const multerUploads = multer({ storage });
 // Rótin á þessum router er '/tv' eins og skilgreint er í app.js
-function uploadImage(req, res, next) {
-  console.log(req.file);
-  res.json(req.file)
-}
-
-router.post('/test',
-  multerUploads.single('image'), uploadImage);
 
 /**
  * Skilar síðum af sjónvarpsþáttum með grunnupplýsingum
@@ -56,13 +49,14 @@ router.get('/', async (req, res) => {
     isImageValid,
  */
 router.post('/',
+  multerUploads.single('image'),
   requireAuthentication,
   isAdmin,
   seriesValidationMiddleware,
   catchErrors(validationCheck),
   superSanitizationMiddleware,
   async (req, res) => {
-    const result = await insertSeries(req.body);
+    const result = await insertSeries(req);
     res.json(result.rows);
   });
 
@@ -140,6 +134,7 @@ router.get('/:id/season/',
  * Býr til nýtt í season í sjónvarpþætti, aðeins ef notandi er stjórnandi
  */
 router.post('/:id/season/',
+  multerUploads.single('poster'),
   isSeriesValid,
   requireAuthentication,
   isAdmin,
@@ -148,7 +143,7 @@ router.post('/:id/season/',
   superSanitizationMiddleware,
   async (req, res) => {
     const { id } = req.params;
-    const season = await createSeasons(req.body, id);
+    const season = await createSeasons(req, id);
     res.json(season);
   });
 

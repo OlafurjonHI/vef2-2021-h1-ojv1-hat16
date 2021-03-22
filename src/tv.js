@@ -209,18 +209,13 @@ export async function createEpisodes(episode) {
 export async function createSeasons(series, id = null) {
   const {
     serieId = id, name, airDate, poster, overview, serie, number,
-  } = series;
+  } = series.body;
   let parsedDate = null;
   if (airDate && airDate.length > 0) {
     const d = Date.parse(airDate);
     parsedDate = new Date(d);
   }
-  let imgUrl = 'FAKEPATH';
-  if (!poster == null) {
-    imgUrl = await uploadImg(`./data/img/${poster}`);
-  } else {
-    imgUrl = 'FAKEPATH';
-  }
+  const imgUrl = await uploadImg(series.file.path);
   const q = `
     INSERT INTO
       seasons (serie_id,name,overview,air_date, poster,number, serie)
@@ -317,18 +312,8 @@ export async function insertSeries(series) {
   const {
     // eslint-disable-next-line no-unused-vars
     name, airDate, inProduction, tagline, image, description, language, network, url,
-  } = series;
-
-  let imgUrl;
-  try {
-    // Fyrir testing reasons notum við static test mynd
-    const testImage = './test-image.png';
-    imgUrl = await uploadImg(testImage);
-
-    // const imgUrl = await uploadImg(`./data/img/${image}`);
-  } catch (e) {
-    console.error(e);
-  }
+  } = series.body;
+  const imgUrl = await uploadImg(series.file.path);
 
   const q = `INSERT INTO
     series (name, tagline, description, air_date,

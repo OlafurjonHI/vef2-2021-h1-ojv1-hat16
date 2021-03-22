@@ -44,9 +44,6 @@ export const seasonsValidationMiddleware = [
     .isBoolean()
     .optional()
     .withMessage('inProduction is either true or false'),
-  body('poster')
-    .notEmpty()
-    .withMessage('image is'),
 
 ];
 
@@ -55,9 +52,6 @@ export const seriesValidationMiddleware = [
     .notEmpty()
     .isLength({ min: 1, max: 256 })
     .withMessage('name is required, max 256 characters'),
-  body('image')
-    .notEmpty()
-    .withMessage('image is required'),
   body('inProduction')
     .isBoolean()
     .optional()
