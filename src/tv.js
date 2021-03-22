@@ -204,24 +204,48 @@ export async function createEpisodes(episode) {
   }
   return null;
 }
-
-// name,number,airDate,overview,poster,serie,serieId
 export async function createSeasons(series, id = null) {
-  const data = (series.body) || series;
-  const filePath = series.file.path || series.poster;
   const {
-    serieId = id, name, airDate, overview, serie, number,
-  } = data;
+    serieId = id, name, airDate, poster, overview, serie, number,
+  } = series.body;
   let parsedDate = null;
   if (airDate && airDate.length > 0) {
     const d = Date.parse(airDate);
     parsedDate = new Date(d);
   }
-  let imgUrl = '';
+  const imgUrl = await uploadImg(series.file.path).catch(console.error('Error uploading image'));
+  const q = `
+    INSERT INTO
+      seasons (serie_id,name,overview,air_date, poster,number, serie)
+    VALUES ($1, $2, $3, $4, $5, $6,$7)
+    RETURNING *
+  `;
   try {
-    imgUrl = await uploadImg(`./data/img/${filePath}`);
+    const result = await query(
+      q, [serieId, name, overview, parsedDate, imgUrl, number, serie],
+    );
+    return result.rows[0];
   } catch (e) {
     console.error(e);
+  }
+  return null;
+}
+// name,number,airDate,overview,poster,serie,serieId
+// name,number,airDate,overview,poster,serie,serieId
+export async function createSeasons2(series, id = null) {
+  const {
+    serieId = id, name, airDate, poster, overview, serie, number,
+  } = series;
+  let parsedDate = null;
+  if (airDate && airDate.length > 0) {
+    const d = Date.parse(airDate);
+    parsedDate = new Date(d);
+  }
+  let imgUrl = 'FAKEPATH';
+  if (!poster == null) {
+    imgUrl = await uploadImg(`./data/img/${poster}`);
+  } else {
+    imgUrl = 'FAKEPATH';
   }
   const q = `
     INSERT INTO

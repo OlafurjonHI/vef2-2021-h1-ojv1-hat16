@@ -1,6 +1,6 @@
 import csv from 'csvtojson';
 import {
-  createSeries, createSeasons, createEpisodes, addGenresSeriesConnection,
+  createSeries, createSeasons2, createEpisodes, addGenresSeriesConnection,
 } from './tv.js';
 import { createAdmin, createUser } from './users.js';
 
@@ -18,7 +18,7 @@ const insertEpisodes = async () => {
 const insertSeasons = async () => {
   const seasons = await csv().fromFile(seasonsCSV);
   seasons.forEach(async (s) => {
-    await (createSeasons(s));
+    await (createSeasons2(s));
   });
 };
 
@@ -37,13 +37,13 @@ const insertSeries = async () => {
 };
 
 const setup = async () => {
-  insertSeries();
+  //insertSeries();
   insertSeasons();
-  insertEpisodes();
-  createAdmin();
-  const req = {};
-  req.body = { username: 'verybasicuser', password: '1234567890', email: 'avarage@joe.is' };
-  createUser(req);
+  //insertEpisodes();
+  //createAdmin();
+  //const req = {};
+  //req.body = { username: 'verybasicuser', password: '1234567890', email: 'avarage@joe.is' };
+  //createUser(req);
 };
 
 setup();
